@@ -1,0 +1,9 @@
+Academic Progress Tracker:
+- storage for logins, personal info, encryption and privacy protection ( can be handled on multiple devices) - 
+- tracks courses that you are enrolled in, the progress, course load management, grade tracking, progress reporting, GPA calculations KYLER
+- gives course reccomendations, and an academic plan, academic progress
+- customizable dashboard, theme options, planners, due date notifs/alerts
+- badges, academic challenges, encouraging words
+- GUI (later)
+- goal setting, milestone trackers-Michael
+- attendance tracker KYLER
