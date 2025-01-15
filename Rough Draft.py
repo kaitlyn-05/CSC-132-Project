@@ -1,5 +1,5 @@
+from tkinter import *
 import tkinter as tk
-from tkinter import ttk
 
 class LoginInfo():
     def __init__ (self, username, password):
@@ -9,6 +9,20 @@ class LoginInfo():
     @property
     def username (self):
         self._username = self.username
-# Create and run the GUI application
-root = tk.Tk()
-root.mainloop()
+
+    @username.setter
+    def username (self, input):
+        self.username = input
+
+    @property
+    def password (self):
+        self._password = self.password
+
+    @password.setter
+    def password (self, input):
+        self.password = input
+
+
+
+
+
