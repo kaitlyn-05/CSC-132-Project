@@ -16,7 +16,7 @@ class Goal:
 
         if milestone_name == "Complete Final Project":
             if not self.can_complete_final_project():
-                print(f"\nYou Cannot Complete '{milestone_name}'. All lessons must be completed first. \n")
+                print(f"\n You Cannot Complete '{milestone_name}'. All lessons must be completed first. \n")
                 return
 
         for milestone in self.milestones:
