@@ -95,5 +95,5 @@ save_result_label.grid(row=3, column=0, columnspan=2)
 
 
 # Run the application
-show_registration_frame()
+show_login_frame()
 window.mainloop()
