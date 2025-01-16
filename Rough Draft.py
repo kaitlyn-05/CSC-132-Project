@@ -1,6 +1,8 @@
 from tkinter import *
 import tkinter as tk
 import csv
+import random
+import string
 
 
 def new_user():
@@ -50,12 +52,35 @@ def show_login_frame():
     login_frame.pack(padx = 10, pady = 10)
     registration_frame.pack_forget()
 
+def show_captcha():
+    generate_captcha()
+    captcha_frame.pack(padx=10,pady=10)
+    login_frame.pack_forget()
+    registration_frame.pack_forget()
+
+def generate_captcha():
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    captcha_label.config(text=captcha_text)
+
+def verify_captcha():
+    user_input = captcha.entry.get().strip()
+    generated_captcha = captcha_label.cget("text")
+
+    if user_input == generated_captcha:
+        captcha_result_label.config(text="Verified! Welcome!!")
+    else:
+        captcha_result_label.config(text="Incorrect input, try again!")
+        generate_captcha()
+        captcha_entry.delete(0,tk.END)
+
 window = tk.Tk()
 window.title("User Registration and Login")
 
 # Login section
 login_frame = tk.LabelFrame(window, text="Login", padx=10, pady=10)
 login_frame.pack_forget()
+login_button = tk.Button(login_frame, text="Login", command=login)
+login_button.grid(row=2, column=0, columnspan=2)
 
 username_label_login = tk.Label(login_frame, text="Username:")
 username_label_login.grid(row=0, column=0)
@@ -67,16 +92,15 @@ password_label_login.grid(row=1, column=0)
 password_entry_login = tk.Entry(login_frame, show="*")
 password_entry_login.grid(row=1, column=1)
 
-login_button = tk.Button(login_frame, text="Login", command=login)
-login_button.grid(row=2, column=0, columnspan=2)
+
 result_label = tk.Label(login_frame, text="")
 result_label.grid(row=3, column=0, columnspan=2)
 
+registration_frame = tk.LabelFrame(window, text="Register", padx=10, pady=10)
+registration_frame.pack(padx=10, pady=10)
 register_button = tk.Button(login_frame, text = "Not registered? Click here to register now!", command = new_user)
 register_button.grid (row = 4, column = 0, columnspan = 2 )
 
-registration_frame = tk.LabelFrame(window, text="Register", padx=10, pady=10)
-registration_frame.pack(padx=10, pady=10)
 
 
 username_label_save = tk.Label(registration_frame, text="Username:")
@@ -94,6 +118,19 @@ save_button.grid(row=2, column=0, columnspan=2)
 save_result_label = tk.Label(registration_frame, text="")
 save_result_label.grid(row=3, column=0, columnspan=2)
 
+captcha_frame = tk.LabelFrame(window, text = "CAPTCHA VERIFICATION", padx=10,pady=10)
+
+captcha_label = tk.Label(captcha_frame, text='', font=("Ariel", 15), fg = "blue")
+captcha_label.grid(row=0,column=0,columnspan=2)
+
+captcha_entry = tk.Entry(captcha_frame)
+captcha_entry.grid(row=1,column=0,columnspan=2)
+
+verify_button = tk.Button(captcha_frame, text="Verify", command=verify_captcha)
+verify_button.grid(row=2, column=0, columnspan=2)
+
+captcha_result_label = tk.Label(captcha_frame, text="")
+captcha_result_label.grid(row=3, column=0, columnspan=2)
 
 
 # Run the application
