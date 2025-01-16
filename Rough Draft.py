@@ -12,6 +12,8 @@ def save_data():
     username = username_entry_save.get().strip()
     password = password_entry_save.get().strip()
 
+    result_label.config(text="")
+
     if username and password:
             with open('users.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
