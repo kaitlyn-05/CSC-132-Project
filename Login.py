@@ -49,6 +49,7 @@ def login():
                 if row[0].strip() == username and row[1].strip() == password:
                     result_label.config(text="Login successful!")
                     show_captcha_frame()
+                    captcha_entry.delete(0, tk.END)
                     return
             # if the user is registered, but the password is wrong
             result_label.config(text="Invalid username or password")
@@ -69,7 +70,7 @@ def show_login_frame():
 
 # captcha generation
 def generate_captcha():
-    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
+    captcha_text = ''.join(random.choices(string.ascii_letters + string.digits, k = 6))
     captcha_label.config(text=captcha_text)
 
 # captcha frame function
@@ -96,7 +97,6 @@ def verify_captcha():
 
 def load_dashboard():
     pass
-
 
 
 # assigns the window
