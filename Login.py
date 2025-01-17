@@ -3,12 +3,17 @@ from tkinter import *
 import tkinter as tk
 import csv
 import string
+import hashlib
+import os
 
 
+# hashes a password for better security
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
-# function that created a new user for the program
+# opens the registration frame
 def new_user():
-    """Creates new user"""
+    """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
 
@@ -22,9 +27,13 @@ def save_data():
     # stores the entered username and password to a CSV File
     # also verifies both a username and password are entered
     if username and password:
-            with open('users.csv', 'a', newline='') as file:
+            hashed_password = hash_password(password)
+            if not os.path.exists('users.csv'):
+                with open('users.csv', 'w')as file:
+                    pass
+            with open ('users.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow([username, password])
+                writer.writerow([username, hashed_password])
                 # deletes the entries in the entry line
             username_entry_save.delete(0, tk.END)
             password_entry_save.delete(0, tk.END)
@@ -39,7 +48,7 @@ def save_data():
 def login():
     """Function that logs the user in"""
     username = username_entry_login.get().strip()
-    password = password_entry_login.get().strip()
+    password =hash_password(password_entry_login.get().strip())
     # trys the entered username and password
     try:
         with open('users.csv', 'r') as file:
@@ -85,6 +94,7 @@ def verify_captcha():
     user_input = captcha_entry.get().strip()
     #prints the generated captcha
     generated_captcha = captcha_label.cget("text")
+    captcha_entry.delete(0,tk.END)
     # if the user entered the captcha correctly, its verified
     # if not, the user is given another one
     if user_input == generated_captcha:
@@ -93,16 +103,15 @@ def verify_captcha():
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
         generate_captcha()
-        captcha_entry.delete(0,tk.END)
+
 
 def load_dashboard():
     pass
 
 
-# assigns the window
+#initialize window
 window = tk.Tk()
-
-# the window title
+window.geometry("400x300")
 window.title("User Registration and Login")
 
 # instantiates the the frames and gives the their name and size
