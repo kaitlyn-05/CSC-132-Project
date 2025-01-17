@@ -1,10 +1,24 @@
 Academic Progress Tracker:
-- storage for logins, personal info, encryption and privacy protection ( can be handled on multiple devices) = Kaitlyn
-- tracks courses that you are enrolled in, the progress, course load management, grade tracking, progress reporting, GPA calculations = Kyler
-- gives course reccomendations, and an academic plan, academic progress = Kyler
+
+KAITLYN 
+#####################################################
+- registration, login, captcha, = Kaitlyn (DONE)
+
+- badges, academic challenges, = Kaitlyn
+
+KYLER
+#####################################################
+- tracks courses, progress, grades, course load management, attendance, GPA calculations = Kyler
+
+- gives course reccomendations = Kyler
+
+MICHAEL
+####################################################
 - customizable dashboard, theme options, planners, due date notifs/alerts = Michael
-- badges, academic challenges, encouraging words = Kaitlyn
-- GUI (later) = Michael
-- goal setting, milestone trackers = Micheal(Done)
-- attendance tracker = Kyler
+
+- goal setting, milestone trackers, encouragin words = Micheal(Done)
+
+ALL
+####################################################
+breadboard, lights, buttons, circutry
 

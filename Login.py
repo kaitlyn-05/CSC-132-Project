@@ -94,6 +94,9 @@ def verify_captcha():
         generate_captcha()
         captcha_entry.delete(0,tk.END)
 
+def load_dashboard():
+    pass
+
 
 
 # assigns the window
