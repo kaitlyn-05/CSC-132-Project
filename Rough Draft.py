@@ -39,6 +39,7 @@ def login():
             for row in reader:
                 if row[0].strip() == username and row[1].strip() == password:
                     result_label.config(text="Login successful!")
+                    show_captcha_frame()
                     return
             result_label.config(text="Invalid username or password")
     except FileNotFoundError:
@@ -47,12 +48,14 @@ def login():
 def show_registration_frame():
     registration_frame.pack(padx=10,pady=10)
     login_frame.pack_forget()
+    captcha_frame.pack_forget()
 
 def show_login_frame():
     login_frame.pack(padx = 10, pady = 10)
     registration_frame.pack_forget()
+    captcha_frame.pack_forget()
 
-def show_captcha():
+def show_captcha_frame():
     generate_captcha()
     captcha_frame.pack(padx=10,pady=10)
     login_frame.pack_forget()
@@ -63,7 +66,7 @@ def generate_captcha():
     captcha_label.config(text=captcha_text)
 
 def verify_captcha():
-    user_input = captcha.entry.get().strip()
+    user_input = captcha_entry.get().strip()
     generated_captcha = captcha_label.cget("text")
 
     if user_input == generated_captcha:
@@ -78,7 +81,8 @@ window.title("User Registration and Login")
 
 # Login section
 login_frame = tk.LabelFrame(window, text="Login", padx=10, pady=10)
-login_frame.pack_forget()
+
+
 login_button = tk.Button(login_frame, text="Login", command=login)
 login_button.grid(row=2, column=0, columnspan=2)
 
