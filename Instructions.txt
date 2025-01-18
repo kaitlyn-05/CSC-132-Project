@@ -3,7 +3,7 @@ Academic Progress Tracker:
 KAITLYN 
 #####################################################
 - registration, login, captcha, = DONE
-- after login go to dashboard = NOT DONE
+- after login go to dashboard = DONE
 
 - badges, academic challenges, = NOT DONE
 
