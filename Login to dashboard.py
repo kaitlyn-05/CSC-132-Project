@@ -18,34 +18,46 @@ class Dashboard:
         self.root.title("Academic Progress Tracker")
         self.make_fullscreen()
 
+        # Initialize lists and dictionaries for tasks, classes, grades, and goals
         self.tasks = []
         self.classes = {}
         self.grades = {}
         self.goals = {}
 
+        # List of available themes
         self.theme_list = [LIGHT_THEME, DARK_THEME, PINK_THEME, PURPLE_THEME]
-        self.current_theme_index = 0  # Start with the first theme, Light Theme
+        self.current_theme_index = 0  # Start with the first theme (Light Theme)
         self.original_theme = self.theme_list[self.current_theme_index]
         self.font = ("Arial", 12)
-        self.my_widgets()
+
+        # variables 
+        self.student_name_var = tk.StringVar()
+        self.course_name_var = tk.StringVar()
+        self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
+        self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
+        self.status_var = tk.StringVar(value="Present")
+        self.course_filter_var = tk.StringVar()
+
+        
+        self.my_widgets()  # Setup the GUI components
+        self.update_filter_options()
 
     def make_fullscreen(self):
+        # Makes the app window fullscreen
         self.root.attributes("-fullscreen", True)
-        self.root.bind("<Escape>", self.toggle_fullscreen)  # with this you can exit full screen    
+        self.root.bind("<Escape>", self.toggle_fullscreen)  # Press Escape to exit fullscreen    
 
     def toggle_fullscreen(self, event=None):
+        # Toggles between fullscreen and windowed mode
         current_state = self.root.attributes("-fullscreen")
         self.root.attributes("-fullscreen", not current_state)
 
     def toggle_theme(self):
-        # Toggle between themes in the theme list
+        # Changes the theme each time it's called
         self.current_theme_index = (self.current_theme_index + 1) % len(self.theme_list)
         self.original_theme = self.theme_list[self.current_theme_index]
 
-        # Update the theme for all widgets
-        self.decide_theme()
-
-        # Update the text on the button based on the current theme
+        # Update the text on the theme button based on the current theme
         theme_name = self.theme_list[self.current_theme_index]
         if theme_name == LIGHT_THEME:
             self.theme_button.config(text="Switch to Dark Theme")
@@ -55,49 +67,55 @@ class Dashboard:
             self.theme_button.config(text="Switch to Purple Theme")
         else:
             self.theme_button.config(text="Switch to Light Theme")
+            
+        # Update theme for all widgets
+        self.decide_theme()
 
     def decide_theme(self):
-    # Update the background color of the root window
+        # Applies the current theme to all components
         self.root.config(bg=self.original_theme["bg"])
 
-    # Update labels' background and foreground colors
+        # Update labels' background and foreground colors
         self.header_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.task_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.due_date_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.task_listbox_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.schedule_listbox_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
 
-    # Update entry fields' background and foreground colors
+        # Update entry fields' background and foreground colors
         self.task_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.due_date_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
-        self.schedule_listbox.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])    
-    # Update buttons' background and foreground colors
+        
+        # Update listboxes' background and foreground colors
+        self.task_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
+        self.schedule_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
+
+        # Update buttons' background and foreground colors
         self.add_task_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.schedule_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.grades_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.goal_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.update_progress_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
 
-    # Update listbox background and foreground colors
-        self.task_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
-        self.schedule_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
-
-    # Update the goal progress bar background color
+        # Update Goal Progress Bar background color
         self.goal_progress_bar.config(bg=self.original_theme["listbox_bg"])
 
-    # Update Goal Progress label's background and foreground colors
+        # Update Goal Progress label's background and foreground colors
         self.goal_progress_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
-    def my_widgets(self):
-        # header
-        self.header_label = tk.Label(self.root, text="Advanced Task & Goal Planner", font=("Helvetica", 18, "bold"))
-        self.header_label.grid(row=0, column=0, columnspan=2, pady=20)
 
-        # theme button
+        # Update the border color of the frame surrounding the schedule listbox
+        self.schedule_frame.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"], relief="solid")
+
+    def my_widgets(self):
+        # Creates and arranges the widgets (UI elements) in the window
+        self.header_label = tk.Label(self.root, text="Academic Progress Tracker", font=("Helvetica", 18, "bold"))
+        self.header_label.grid(row=0, column=0, columnspan=3, pady=20, sticky="nsew")
+
         self.theme_button = tk.Button(self.root, text="Switch to Dark Theme", command=self.toggle_theme,
                                       font=("Helvetica", 12), relief="solid", width=20, height=2)
         self.theme_button.grid(row=1, column=0, padx=10, pady=10)
 
-        # task list
+        # Task input section
         self.task_label = tk.Label(self.root, text="Task:", font=self.font)
         self.task_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
@@ -105,7 +123,7 @@ class Dashboard:
                                    fg=self.original_theme["entry_fg"])
         self.task_entry.grid(row=2, column=1, padx=10, pady=10)
 
-        # Due date
+        # Due date input section
         self.due_date_label = tk.Label(self.root, text="Due Date (YYYY-MM-DD):", font=self.font)
         self.due_date_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
         
@@ -113,69 +131,177 @@ class Dashboard:
                                        fg=self.original_theme["entry_fg"])
         self.due_date_entry.grid(row=3, column=1, padx=10, pady=10)
 
+        # Button to add tasks
         self.add_task_button = tk.Button(self.root, text="Add Task", font=self.font, command=self.create_task,
                                          bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"],
                                          relief="solid", width=20, height=2)
         self.add_task_button.grid(row=4, column=0, columnspan=2, pady=20)
 
-        # Task Listbox
+        # Task list display section
         self.task_listbox_label = tk.Label(self.root, text="Your Tasks:", font=self.font)
         self.task_listbox_label.grid(row=5, column=0, padx=10, pady=10, sticky="w")
         
         self.task_listbox = tk.Listbox(self.root, width=50, height=10, font=self.font, 
                                        bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
-        self.task_listbox.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
+        self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
 
-        # Schedule & Classes Section (moved to the right of the task list)
-        self.schedule_frame = tk.Frame(self.root)
-        self.schedule_frame.grid(row=2, column=2, rowspan=5, padx=20, pady=10, sticky="n")
+        # Schedule list display section (on the right side)
+        self.schedule_listbox_label = tk.Label(self.root, text="Your Schedule:", font=self.font)
+        self.schedule_listbox_label.grid(row=5, column=2, padx=10, pady=10, sticky="w")
+        
+        self.schedule_listbox = tk.Listbox(self.root, width=50, height=10, font=self.font, 
+                                           bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
+        self.schedule_listbox.grid(row=6, column=2, columnspan=2, padx=20, pady=20)
 
-        self.schedule_button = tk.Button(self.schedule_frame, text="Add Class Schedule", font=self.font, command=self.add_schedule,
+        # Button to add class schedules
+        self.schedule_button = tk.Button(self.root, text="Add Class Schedule", font=self.font, command=self.add_schedule,
                                          bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"],
                                          relief="solid", width=20, height=2)
-        self.schedule_button.grid(row=0, column=0, padx=10, pady=10)
+        self.schedule_button.grid(row=4, column=2, pady=10)
 
-        # Listbox to show schedules
-        self.schedule_listbox_label = tk.Label(self.schedule_frame, text="Your Schedules:", font=self.font)
-        self.schedule_listbox_label.grid(row=1, column=0, padx=10, pady=10)
-
-        self.schedule_listbox = tk.Listbox(self.schedule_frame, width=30, height=10, font=self.font, 
-                                           bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
-        self.schedule_listbox.grid(row=2, column=0, padx=10, pady=10)
-
-        # Grades Section
-        self.grades_button = tk.Button(self.schedule_frame, text="Add Grades", font=self.font, command=self.add_grades,
+        # Button to add grades
+        self.grades_button = tk.Button(self.root, text="Add Grades", font=self.font, command=self.add_grades,
                                        bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"],
                                        relief="solid", width=20, height=2)
-        self.grades_button.grid(row=3, column=0, padx=10, pady=10)
+        self.grades_button.grid(row=7, column=2, pady=10)
 
-        # Goals Section
+        # Goals section
         self.goal_button = tk.Button(self.root, text="Set Goals", font=self.font, command=self.add_goal,
                                      bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"],
                                      relief="solid", width=20, height=2)
-        self.goal_button.grid(row=8, column=0, columnspan=2, pady=20)
+        self.goal_button.grid(row=7, column=0, columnspan=2, pady=20)
 
-        # Goal Progress Bar
+        # Goal progress bar
         self.goal_progress_label = tk.Label(self.root, text="Goal Progress:", font=self.font)
-        self.goal_progress_label.grid(row=9, column=0, padx=10, pady=10, sticky="w")
+        self.goal_progress_label.grid(row=8, column=0, padx=10, pady=10, sticky="w")
 
         self.goal_progress_bar = tk.Canvas(self.root, width=200, height=30, bg=self.original_theme["listbox_bg"])
-        self.goal_progress_bar.grid(row=9, column=1, padx=10, pady=10)
+        self.goal_progress_bar.grid(row=8, column=1, padx=10, pady=10)
 
         # Button to update goal progress
-        self.update_progress_button = tk.Button(self.root, text="Update Goal Progress", font=self.font, 
-                                                 command=self.update_goal_progress, 
+        self.update_progress_button = tk.Button(self.root, text="Update Goal Progress", font=self.font, command=self.update_goal_progress, 
                                                  bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"],
                                                  relief="solid", width=20, height=2)
         self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
 
+        # Student Name
+        tk.Label(self.root, text="Student Name:").grid(row=0, column=4)
+        tk.Entry(self.root, textvariable=self.student_name_var).grid(row=0, column=5)
+
+        # Course Name
+        tk.Label(self.root, text="Course Name:").grid(row=1, column=4)
+        tk.Entry(self.root, textvariable=self.course_name_var).grid(row=1, column=5)
+
+        # Date
+        tk.Label(self.root, text="Date (YYYY-MM-DD):").grid(row=2, column=4)
+        tk.Entry(self.root, textvariable=self.date_var).grid(row=2, column=5)
+
+        # Time
+        tk.Label(self.root, text="Time (HH:MM):").grid(row=3, column=4)
+        tk.Entry(self.root, textvariable=self.time_var).grid(row=3, column=5)
+
+        # Attendance Status
+        tk.Label(self.root, text="Attendance (Present/Absent):").grid(row=4, column=4)
+        tk.OptionMenu(self.root, self.status_var, "Present", "Absent").grid(row=4, column=5)
+
+        # Submit Button
+        tk.Button(self.root, text="Submit Attendance", command=self.submit_attendance).grid(
+            row=5, column=4, columnspan=2
+        )
+
+        # Attendance Listbox
+        self.attendance_listbox = tk.Listbox(self.root, height=10, width=50)
+        self.attendance_listbox.grid(row=6, column=4, columnspan=2)
+
+        # Course Filter
+        tk.Label(self.root, text="Filter by Course:").grid(row=7, column=4)
+        self.course_filter_menu = tk.OptionMenu(self.root, self.course_filter_var, [])
+        self.course_filter_menu.grid(row=7, column=5)
+
+        # Filter Button
+        tk.Button(self.root, text="Filter Attendance", command=self.filter_by_course).grid(
+            row=8, column=4, columnspan=2
+        )
+
+    def submit_attendance(self):
+            student_name = self.student_name_var.get()
+            course_name = self.course_name_var.get()
+            date = self.date_var.get()
+            time = self.time_var.get()
+            status = self.status_var.get()
+
+            # Input validation
+            if not all([student_name, course_name, date, time]):
+                print("All fields must be filled.")
+                return
+
+            # Save attendance to file
+            try:
+                with open("attendance.csv", mode="a", newline="") as file:
+                    writer = csv.writer(file)
+                    writer.writerow([student_name, course_name, date, time, status])
+                print("Attendance submitted successfully!")
+            except Exception as e:
+                print(f"Error: Cannot write to file. {e}")
+                return
+
+            # Reset fields
+            self.student_name_var.set("")
+            self.course_name_var.set("")
+            self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
+            self.time_var.set(datetime.now().strftime("%H:%M"))
+            self.status_var.set("Present")
+
+            # Update course filter and reset listbox
+            self.update_filter_options()
+            self.attendance_listbox.delete(0, tk.END)
+
+    def update_filter_options(self):
+            courses = set()
+            try:
+                with open("attendance.csv", mode="r", newline="") as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        courses.add(row[1])
+            except FileNotFoundError:
+                print("Attendance file not found.")
+
+            course_filter_option = ["All"] + sorted(courses)
+            self.course_filter_menu["menu"].delete(0, "end")
+            for course in course_filter_option:
+                self.course_filter_menu["menu"].add_command(
+                    label=course, command=tk._setit(self.course_filter_var, course)
+                )
+
+    def filter_by_course(self):
+        course_to_filter = self.course_filter_var.get()
+        self.attendance_listbox.delete(0, tk.END)
+
+        try:
+            with open("attendance.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if course_to_filter == "All" or row[1] == course_to_filter:
+                       formatted_date = datetime.strptime(row[2], "%Y-%m-%d").strftime(
+                            "%B %d, %Y"
+                        )
+                    formatted_time = datetime.strptime(row[3], "%H:%M").strftime("%I:%M %p")
+                    self.attendance_listbox.insert(
+                            tk.END,
+                            f"{row[0]} - {row[1]} - {formatted_date} - {formatted_time} - {row[4]}",
+                        )
+        except FileNotFoundError:
+            print("Attendance file not found.")
+
+
     def create_task(self):
+        # Create a new task and add it to the task list
         task = self.task_entry.get()
         due_date = self.due_date_entry.get()
 
         if task and due_date:
             try:
-                # Check if the due date format is correct
+                # Check if the due date is in the correct format
                 datetime.strptime(due_date, "%Y-%m-%d")
                 self.tasks.append({"task": task, "due_date": due_date, "created": datetime.now()})
                 self.update_task_list()
@@ -187,12 +313,14 @@ class Dashboard:
             messagebox.showwarning("Input Error", "Please enter both task and due date.")
 
     def update_task_list(self):
+        # Update the displayed list of tasks with their due dates
         self.task_listbox.delete(0, tk.END)
         for task in self.tasks:
             days_left = self.calculate_days_left(task["due_date"])
             self.task_listbox.insert(tk.END, f"{task['task']} - Due: {task['due_date']} (Days Left: {days_left})")
 
     def add_schedule(self):
+        # Add a class schedule along with its grade
         class_name = simpledialog.askstring("Class Name", "Enter the class name:")
         if class_name:
             schedule = simpledialog.askstring("Class Schedule", f"Enter the schedule for {class_name} (e.g. Mon 9-11 AM):")
@@ -205,6 +333,7 @@ class Dashboard:
                     messagebox.showinfo("Class Added", f"Class '{class_name}' scheduled for {schedule} with grade {grade}.")
                 
     def add_grades(self):
+        # Allow the user to add or update grades for a class
         class_name = simpledialog.askstring("Class Name", "Enter the class name to add grades:")
         if class_name and class_name in self.classes:
             grade = simpledialog.askfloat(f"Grade for {class_name}", f"Enter the grade for {class_name}:")
@@ -215,45 +344,48 @@ class Dashboard:
             messagebox.showwarning("Class Not Found", f"Class '{class_name}' not found. Please add the class first.")
 
     def add_goal(self):
-        goal_name = simpledialog.askstring("Goal Name", "Enter the name of your goal:")
+        # Allow the user to set a new goal
+        goal_name = simpledialog.askstring("Goal Name", "Enter the goal you want to set:")
         if goal_name:
-            goal_target = simpledialog.askinteger("Goal Target", f"Enter the target value for {goal_name}:")
-            if goal_target:
-                self.goals[goal_name] = {"target": goal_target, "progress": 0}
-                messagebox.showinfo("Goal Added", f"Goal '{goal_name}' with target {goal_target} set.")
+            target = simpledialog.askinteger("Goal Target", f"Enter the target value for {goal_name}:")
+            if target:
+                self.goals[goal_name] = {"target": target, "progress": 0}
+                messagebox.showinfo("Goal Set", f"Goal '{goal_name}' set with target value {target}.")
 
     def update_goal_progress(self):
-        goal_name = simpledialog.askstring("Goal Name", "Enter the name of the goal to update progress:")
-        if goal_name in self.goals:
-            progress = simpledialog.askinteger("Progress", f"Enter the amount of progress made for {goal_name}:")
+        # Update the progress of a set goal
+        goal_name = simpledialog.askstring("Goal Name", "Enter the goal you want to update:")
+        if goal_name and goal_name in self.goals:
+            progress = simpledialog.askinteger("Goal Progress", f"Enter the current progress for {goal_name}:")
             if progress is not None:
-                # Ensure the new progress is not less than the previous progress
-                goal_info = self.goals[goal_name]
-                if progress >= goal_info["progress"]:
-                    goal_info["progress"] = progress
-                    self.goal_progress()  # Update progress bar and label
-                    messagebox.showinfo("Progress Updated", f"Progress for '{goal_name}' updated to {progress}.")
+                # Ensure the progress is valid (not less than previous progress and not exceeding the target)
+                if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
+                    self.goals[goal_name]["progress"] = progress
+                    self.update_goal_progress_bar()
+                    messagebox.showinfo("Goal Progress Updated", f"Progress for '{goal_name}' updated to {progress}.")
                 else:
-                    messagebox.showwarning("Invalid Progress", "Progress must not be less than the previous value.")
+                    messagebox.showwarning("Invalid Progress", "Progress cannot be less than the previous value or greater than the target.")
+            else:
+                messagebox.showwarning("Invalid Input", "Please enter a valid progress value.")
         else:
-            messagebox.showwarning("Goal Not Found", f"Goal '{goal_name}' not found.")
+            messagebox.showwarning("Goal Not Found", "Goal not found. Please set the goal first.")
 
-    def goal_progress(self):
-        # Simulate goal progress (updating this as part of a background thread or periodically)
-        for goal_info in self.goals.items():
-            progress = goal_info["progress"]
-            target = goal_info["target"]
-            progress_percentage = (progress / target) * 100
+    def update_goal_progress_bar(self):
+        # Update the goal progress bar to reflect the current progress
+        for goal_name, goal in self.goals.items():
+            progress_percentage = (goal["progress"] / goal["target"]) * 100
             self.goal_progress_bar.delete("all")
-            self.goal_progress_bar.create_rectangle(0, 0, progress_percentage * 2, 30, fill="blue")
-            # Also update the label with the percentage
-            self.goal_progress_label.config(text=f"Goal Progress: {progress_percentage:.2f}%")
-
+            self.goal_progress_bar.create_rectangle(0, 0, progress_percentage*2, 30, fill="#4CAF50")
+            self.goal_progress_bar.create_text(progress_percentage*2, 15, text=f"{goal['progress']}/{goal['target']}", anchor=tk.CENTER)
+        
     def calculate_days_left(self, due_date):
-        due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")
-        days_left = (due_date_obj - datetime.now()).days
-        return days_left
-
+        # Calculate the number of days left until the due date
+        try:
+            due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")
+            delta = due_date_obj - datetime.now()
+            return delta.days
+        except ValueError:
+            return 0
 ############ Login/Registration/Captcha ############
 
 # hashes a password for better security
