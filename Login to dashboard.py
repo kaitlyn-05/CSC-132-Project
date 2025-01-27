@@ -11,42 +11,6 @@ import hashlib
 import os
 
 ############ Dashboard ############
-# Themes
-LIGHT_THEME = {"bg": "#ffffff",
-               "fg": "#000000",
-               "button_bg": "#4CAF50",  # Green buttons
-               "button_fg": "#ffffff",
-               "entry_bg": "#f1f1f1",
-               "entry_fg": "#000000",
-               "listbox_bg": "#f9f9f9",
-               "listbox_fg": "#000000"}
-
-DARK_THEME = {"bg": "#333333",
-              "fg": "#ffffff",
-              "button_bg": "#ff5722",  # Orange buttons
-              "button_fg": "#ffffff",
-              "entry_bg": "#444444",
-              "entry_fg": "#ffffff",
-              "listbox_bg": "#555555",
-              "listbox_fg": "#ffffff"}
-
-PINK_THEME = {"bg": "#f8e0e6",
-              "fg": "#333333",
-              "button_bg": "#e91e63",  # Pink buttons
-              "button_fg": "#ffffff",
-              "entry_bg": "#fce4ec",
-              "entry_fg": "#000000",
-              "listbox_bg": "#f8bbd0",
-              "listbox_fg": "#000000"}
-
-PURPLE_THEME = {"bg": "#6a1b9a",
-                "fg": "#ffffff",
-                "button_bg": "#9c27b0",  # Purple buttons
-                "button_fg": "#ffffff",
-                "entry_bg": "#9c4dcc",
-                "entry_fg": "#ffffff",
-                "listbox_bg": "#7b1fa2",
-                "listbox_fg": "#ffffff"}
 
 class Dashboard:
     def __init__(self, root):
@@ -607,6 +571,43 @@ password_entry_login.grid(row=1, column=1)
 username_entry_save.grid(row=0, column=1)
 password_entry_save.grid(row=1, column=1)
 captcha_entry.grid(row=1,column=0,columnspan=2)
+
+# Themes
+LIGHT_THEME = {"bg": "#ffffff",
+               "fg": "#000000",
+               "button_bg": "#4CAF50",  # Green buttons
+               "button_fg": "#ffffff",
+               "entry_bg": "#f1f1f1",
+               "entry_fg": "#000000",
+               "listbox_bg": "#f9f9f9",
+               "listbox_fg": "#000000"}
+
+DARK_THEME = {"bg": "#333333",
+              "fg": "#ffffff",
+              "button_bg": "#ff5722",  # Orange buttons
+              "button_fg": "#ffffff",
+              "entry_bg": "#444444",
+              "entry_fg": "#ffffff",
+              "listbox_bg": "#555555",
+              "listbox_fg": "#ffffff"}
+
+PINK_THEME = {"bg": "#f8e0e6",
+              "fg": "#333333",
+              "button_bg": "#e91e63",  # Pink buttons
+              "button_fg": "#ffffff",
+              "entry_bg": "#fce4ec",
+              "entry_fg": "#000000",
+              "listbox_bg": "#f8bbd0",
+              "listbox_fg": "#000000"}
+
+PURPLE_THEME = {"bg": "#6a1b9a",
+                "fg": "#ffffff",
+                "button_bg": "#9c27b0",  # Purple buttons
+                "button_fg": "#ffffff",
+                "entry_bg": "#9c4dcc",
+                "entry_fg": "#ffffff",
+                "listbox_bg": "#7b1fa2",
+                "listbox_fg": "#ffffff"}
 
 ############ MAIN ############
 show_login_frame()
