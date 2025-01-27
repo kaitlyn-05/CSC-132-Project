@@ -11,6 +11,42 @@ import hashlib
 import os
 
 ############ Dashboard ############
+# Themes
+LIGHT_THEME = {"bg": "#ffffff",
+               "fg": "#000000",
+               "button_bg": "#4CAF50",  # Green buttons
+               "button_fg": "#ffffff",
+               "entry_bg": "#f1f1f1",
+               "entry_fg": "#000000",
+               "listbox_bg": "#f9f9f9",
+               "listbox_fg": "#000000"}
+
+DARK_THEME = {"bg": "#333333",
+              "fg": "#ffffff",
+              "button_bg": "#ff5722",  # Orange buttons
+              "button_fg": "#ffffff",
+              "entry_bg": "#444444",
+              "entry_fg": "#ffffff",
+              "listbox_bg": "#555555",
+              "listbox_fg": "#ffffff"}
+
+PINK_THEME = {"bg": "#f8e0e6",
+              "fg": "#333333",
+              "button_bg": "#e91e63",  # Pink buttons
+              "button_fg": "#ffffff",
+              "entry_bg": "#fce4ec",
+              "entry_fg": "#000000",
+              "listbox_bg": "#f8bbd0",
+              "listbox_fg": "#000000"}
+
+PURPLE_THEME = {"bg": "#6a1b9a",
+                "fg": "#ffffff",
+                "button_bg": "#9c27b0",  # Purple buttons
+                "button_fg": "#ffffff",
+                "entry_bg": "#9c4dcc",
+                "entry_fg": "#ffffff",
+                "listbox_bg": "#7b1fa2",
+                "listbox_fg": "#ffffff"}
 
 class Dashboard:
     def __init__(self, root):
@@ -58,6 +94,8 @@ class Dashboard:
         self.original_theme = self.theme_list[self.current_theme_index]
 
         # Update the text on the theme button based on the current theme
+         # Update theme for all widgets
+        self.decide_theme()
         theme_name = self.theme_list[self.current_theme_index]
         if theme_name == LIGHT_THEME:
             self.theme_button.config(text="Switch to Dark Theme")
@@ -68,8 +106,7 @@ class Dashboard:
         else:
             self.theme_button.config(text="Switch to Light Theme")
             
-        # Update theme for all widgets
-        self.decide_theme()
+       
 
     def decide_theme(self):
         # Applies the current theme to all components
@@ -81,14 +118,24 @@ class Dashboard:
         self.due_date_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.task_listbox_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.schedule_listbox_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
-
+        self.attendance_listbox.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.student_name_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.course_name_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.date.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.time.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.attendance.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        self.filter.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         # Update entry fields' background and foreground colors
         self.task_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.due_date_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
-        
+        self.student_name_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.course_name_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.date_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.time_entry.config(bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         # Update listboxes' background and foreground colors
         self.task_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         self.schedule_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
+        self.attendance_listbox.config(bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
 
         # Update buttons' background and foreground colors
         self.add_task_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
@@ -96,15 +143,17 @@ class Dashboard:
         self.grades_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.goal_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.update_progress_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
-
+        self.sumbit_attendance_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
+        self.filter_attendance_button.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         # Update Goal Progress Bar background color
         self.goal_progress_bar.config(bg=self.original_theme["listbox_bg"])
 
         # Update Goal Progress label's background and foreground colors
         self.goal_progress_label.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
 
-        # Update the border color of the frame surrounding the schedule listbox
-        self.schedule_frame.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"], relief="solid")
+        # Update OptionMenu background and foreground colors
+        self.present_or_absent.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
+        self.course_filter_menu.config(bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
 
     def my_widgets(self):
         # Creates and arranges the widgets (UI elements) in the window
@@ -185,43 +234,51 @@ class Dashboard:
         self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
 
         # Student Name
-        tk.Label(self.root, text="Student Name:").grid(row=0, column=4)
-        tk.Entry(self.root, textvariable=self.student_name_var).grid(row=0, column=5)
-
+        self.student_name_label=tk.Label(self.root, text="Student Name:",font=self.font)
+        self.student_name_label.grid(row=0, column=4)
+        self.student_name_entry=tk.Entry(self.root, font=self.font,width=15, bg=self.original_theme["entry_bg"],fg=self.original_theme["entry_fg"])
+        self.student_name_entry.grid(row=0, column=5)
         # Course Name
-        tk.Label(self.root, text="Course Name:").grid(row=1, column=4)
-        tk.Entry(self.root, textvariable=self.course_name_var).grid(row=1, column=5)
+        self.course_name_label=tk.Label(self.root, text="Course Name:")
+        self.course_name_label.grid(row=1, column=4)
+        self.course_name_entry=tk.Entry(self.root, font=self.font,width=15, bg=self.original_theme["entry_bg"],fg=self.original_theme["entry_fg"])
+        self.course_name_entry.grid(row=1, column=5)
 
         # Date
-        tk.Label(self.root, text="Date (YYYY-MM-DD):").grid(row=2, column=4)
-        tk.Entry(self.root, textvariable=self.date_var).grid(row=2, column=5)
+        self.date=tk.Label(self.root, text="Date (YYYY-MM-DD):")
+        self.date.grid(row=2, column=4)
+        self.date_entry=tk.Entry(self.root, textvariable=self.date_var)
+        self.date_entry.grid(row=2, column=5)
 
         # Time
-        tk.Label(self.root, text="Time (HH:MM):").grid(row=3, column=4)
-        tk.Entry(self.root, textvariable=self.time_var).grid(row=3, column=5)
+        self.time=tk.Label(self.root, text="Time (HH:MM):")
+        self.time.grid(row=3, column=4)
+        self.time_entry=tk.Entry(self.root, textvariable=self.time_var)
+        self.time_entry.grid(row=3, column=5)
 
         # Attendance Status
-        tk.Label(self.root, text="Attendance (Present/Absent):").grid(row=4, column=4)
-        tk.OptionMenu(self.root, self.status_var, "Present", "Absent").grid(row=4, column=5)
+        self.attendance=tk.Label(self.root, text="Attendance (Present/Absent):")
+        self.attendance.grid(row=4, column=4)
+        self.present_or_absent=tk.OptionMenu(self.root, self.status_var, "Present", "Absent")
+        self.present_or_absent.grid(row=4, column=5)
 
         # Submit Button
-        tk.Button(self.root, text="Submit Attendance", command=self.submit_attendance).grid(
-            row=5, column=4, columnspan=2
-        )
+        self.sumbit_attendance_button=tk.Button(self.root, text="Submit Attendance", command=self.submit_attendance)
+        self.sumbit_attendance_button.grid(row=5, column=4, columnspan=2)
 
         # Attendance Listbox
         self.attendance_listbox = tk.Listbox(self.root, height=10, width=50)
         self.attendance_listbox.grid(row=6, column=4, columnspan=2)
 
         # Course Filter
-        tk.Label(self.root, text="Filter by Course:").grid(row=7, column=4)
+        self.filter=tk.Label(self.root, text="Filter by Course:")
+        self.filter.grid(row=7, column=4)
         self.course_filter_menu = tk.OptionMenu(self.root, self.course_filter_var, [])
         self.course_filter_menu.grid(row=7, column=5)
 
         # Filter Button
-        tk.Button(self.root, text="Filter Attendance", command=self.filter_by_course).grid(
-            row=8, column=4, columnspan=2
-        )
+        self.filter_attendance_button=tk.Button(self.root, text="Filter Attendance", command=self.filter_by_course)
+        self.filter_attendance_button.grid(row=8, column=4, columnspan=2)
 
     def submit_attendance(self):
             student_name = self.student_name_var.get()
@@ -377,7 +434,7 @@ class Dashboard:
             self.goal_progress_bar.delete("all")
             self.goal_progress_bar.create_rectangle(0, 0, progress_percentage*2, 30, fill="#4CAF50")
             self.goal_progress_bar.create_text(progress_percentage*2, 15, text=f"{goal['progress']}/{goal['target']}", anchor=tk.CENTER)
-        
+
     def calculate_days_left(self, due_date):
         # Calculate the number of days left until the due date
         try:
@@ -386,6 +443,9 @@ class Dashboard:
             return delta.days
         except ValueError:
             return 0
+        
+        
+
 ############ Login/Registration/Captcha ############
 
 # hashes a password for better security
@@ -488,44 +548,6 @@ def verify_captcha():
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
         generate_captcha()
-
-# Themes
-LIGHT_THEME = {"bg": "#ffffff",
-               "fg": "#000000",
-               "button_bg": "#4CAF50",  # Green buttons
-               "button_fg": "#ffffff",
-               "entry_bg": "#f1f1f1",
-               "entry_fg": "#000000",
-               "listbox_bg": "#f9f9f9",
-               "listbox_fg": "#000000"}
-
-DARK_THEME = {"bg": "#333333",
-              "fg": "#ffffff",
-              "button_bg": "#ff5722",  # Orange buttons
-              "button_fg": "#ffffff",
-              "entry_bg": "#444444",
-              "entry_fg": "#ffffff",
-              "listbox_bg": "#555555",
-              "listbox_fg": "#ffffff"}
-
-PINK_THEME = {"bg": "#f8e0e6",
-              "fg": "#333333",
-              "button_bg": "#e91e63",  # Pink buttons
-              "button_fg": "#ffffff",
-              "entry_bg": "#fce4ec",
-              "entry_fg": "#000000",
-              "listbox_bg": "#f8bbd0",
-              "listbox_fg": "#000000"}
-
-PURPLE_THEME = {"bg": "#6a1b9a",
-                "fg": "#ffffff",
-                "button_bg": "#9c27b0",  # Purple buttons
-                "button_fg": "#ffffff",
-                "entry_bg": "#9c4dcc",
-                "entry_fg": "#ffffff",
-                "listbox_bg": "#7b1fa2",
-                "listbox_fg": "#ffffff"}
-
 
 #initialize window
 window = tk.Tk()
