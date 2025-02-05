@@ -627,18 +627,15 @@ class Dashboard:
 
 ############ Login/Registration/Captcha ############
 
-
 # hashes a password for better security
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # opens the registration frame
 def new_user():
     """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
-
 
 # function that saves data in a CSV file
 # verifies that both the username and password are entered
@@ -666,7 +663,6 @@ def save_data():
     else:
         save_result_label.config(text="Please enter a username AND password.")
 
-
 # a fucntion to log in the user, verifies that the user is
 # registered
 def login():
@@ -686,13 +682,11 @@ def login():
                     return
             # if the user is registered, but the password is wrong
             result_label.config(text="Invalid username or password")
-
     # if the username or password are not found
     except FileNotFoundError:
         result_label.config(
             text="Hmm, it seems like you haven't registered yet! Please register before trying again"
         )
-
 
 # registration frame function
 def show_registration_frame():
@@ -700,19 +694,16 @@ def show_registration_frame():
     login_frame.pack_forget()
     captcha_frame.pack_forget()
 
-
 # login frame function
 def show_login_frame():
     login_frame.pack(padx=50, pady=50)
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
 
-
 # captcha generation
 def generate_captcha():
     captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
     captcha_label.config(text=captcha_text)
-
 
 # captcha frame function
 def show_captcha_frame():
@@ -720,7 +711,6 @@ def show_captcha_frame():
     captcha_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     registration_frame.pack_forget()
-
 
 # captcha verification
 def verify_captcha():
@@ -739,7 +729,6 @@ def verify_captcha():
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
         generate_captcha()
-
 
 # initialize window
 window = tk.Tk()
