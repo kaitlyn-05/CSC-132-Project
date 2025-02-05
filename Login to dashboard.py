@@ -10,8 +10,10 @@ import string
 import hashlib
 import os
 
-############ Dashboard ############
+# GLOBAL VARIABLES
+CSV_FILE = 'courses.csv'
 
+############ Dashboard ############
 
 class Dashboard:
     def __init__(self, root):
@@ -32,7 +34,6 @@ class Dashboard:
         self.font = ("Arial", 12)
 
         # variables
-        self.student_name_var = tk.StringVar()
         self.course_name_var = tk.StringVar()
         self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
         self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
@@ -95,9 +96,6 @@ class Dashboard:
         self.attendance_listbox.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        self.student_name_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
         self.course_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
@@ -112,9 +110,6 @@ class Dashboard:
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.due_date_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
-        self.student_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.course_name_entry.config(
@@ -334,20 +329,6 @@ class Dashboard:
         )
         self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
 
-        # Student Name
-        self.student_name_label = tk.Label(
-            self.root, text="Student Name:", font=self.font
-        )
-        self.student_name_label.grid(row=0, column=4)
-        self.student_name_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            textvariable=self.student_name_var,
-            width=15,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.student_name_entry.grid(row=0, column=5)
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
@@ -406,14 +387,13 @@ class Dashboard:
 
     # collects the data from the input feilds
     def submit_attendance(self):
-        student_name = self.student_name_var.get()
         course_name = self.course_name_var.get()
         date = self.date_var.get()
         time = self.time_var.get()
         status = self.status_var.get()
 
         # Input validation
-        if not all([student_name, course_name, date, time]):
+        if not all([course_name, date, time]):
             print("All fields must be filled.")
             return
 
@@ -421,12 +401,11 @@ class Dashboard:
         try:
             with open("attendance.csv", mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow([student_name, course_name, date, time, status])
+                writer.writerow([course_name, date, time, status])
 
             print(
-                f"Attendance submitted successfully:\nStudent: {student_name}\nCourse: {course_name}\nDate: {date}\nTime: {time}"
+                f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
             )
-            self.student_name_var.set("")
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
