@@ -10,10 +10,8 @@ import string
 import hashlib
 import os
 
-# GLOBAL VARIABLES
-CSV_FILE = 'courses.csv'
-
 ############ Dashboard ############
+
 
 class Dashboard:
     def __init__(self, root):
@@ -34,6 +32,7 @@ class Dashboard:
         self.font = ("Arial", 12)
 
         # variables
+        self.student_name_var = tk.StringVar()
         self.course_name_var = tk.StringVar()
         self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
         self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
@@ -42,6 +41,10 @@ class Dashboard:
 
         self.my_widgets()  # Setup the GUI components
         self.update_filter_options()
+
+        self.load_tasks_csv()  # Load tasks from CSV
+        self.update_task_list()  # Update the task list in the UI
+
 
     def make_fullscreen(self):
         # Makes the app window fullscreen
@@ -96,6 +99,9 @@ class Dashboard:
         self.attendance_listbox.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
+        self.student_name_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
         self.course_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
@@ -110,6 +116,9 @@ class Dashboard:
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.due_date_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.student_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.course_name_entry.config(
@@ -329,6 +338,20 @@ class Dashboard:
         )
         self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
 
+        # Student Name
+        self.student_name_label = tk.Label(
+            self.root, text="Student Name:", font=self.font
+        )
+        self.student_name_label.grid(row=0, column=4)
+        self.student_name_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            textvariable=self.student_name_var,
+            width=15,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.student_name_entry.grid(row=0, column=5)
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
@@ -387,13 +410,14 @@ class Dashboard:
 
     # collects the data from the input feilds
     def submit_attendance(self):
+        student_name = self.student_name_var.get()
         course_name = self.course_name_var.get()
         date = self.date_var.get()
         time = self.time_var.get()
         status = self.status_var.get()
 
         # Input validation
-        if not all([course_name, date, time]):
+        if not all([student_name, course_name, date, time]):
             print("All fields must be filled.")
             return
 
@@ -401,11 +425,12 @@ class Dashboard:
         try:
             with open("attendance.csv", mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow([course_name, date, time, status])
+                writer.writerow([student_name, course_name, date, time, status])
 
             print(
-                f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
+                f"Attendance submitted successfully:\nStudent: {student_name}\nCourse: {course_name}\nDate: {date}\nTime: {time}"
             )
+            self.student_name_var.set("")
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
@@ -485,6 +510,7 @@ class Dashboard:
                 self.tasks.append(
                     {"task": task, "due_date": due_date, "created": datetime.now()}
                 )
+                self.save_tasks_csv()
                 self.update_task_list()
                 self.task_entry.delete(0, tk.END)
                 self.due_date_entry.delete(0, tk.END)
@@ -506,6 +532,26 @@ class Dashboard:
                 tk.END,
                 f"{task['task']} - Due: {task['due_date']} (Days Left: {days_left})",
             )
+
+    def load_tasks_csv(self):
+        try:
+            with open("tasks.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                self.tasks = [
+                    {"task": row[0], "due_date": row[1], "created": row[2]}
+                    for row in reader
+                ]
+        except FileNotFoundError:
+            print("Tasks file not found, starting fresh.")
+
+    def save_tasks_csv(self):
+        try:
+            with open("tasks.csv", mode="w", newline="") as file:
+                writer = csv.writer(file)
+                for task in self.tasks:
+                    writer.writerow([task["task"], task["due_date"], task["created"]])
+        except Exception:
+            print("Error: Cannot write to file.")
 
     def add_schedule(self):
         # Add a class schedule along with its grade
@@ -627,15 +673,18 @@ class Dashboard:
 
 ############ Login/Registration/Captcha ############
 
+
 # hashes a password for better security
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 # opens the registration frame
 def new_user():
     """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
+
 
 # function that saves data in a CSV file
 # verifies that both the username and password are entered
@@ -663,6 +712,7 @@ def save_data():
     else:
         save_result_label.config(text="Please enter a username AND password.")
 
+
 # a fucntion to log in the user, verifies that the user is
 # registered
 def login():
@@ -682,11 +732,13 @@ def login():
                     return
             # if the user is registered, but the password is wrong
             result_label.config(text="Invalid username or password")
+
     # if the username or password are not found
     except FileNotFoundError:
         result_label.config(
             text="Hmm, it seems like you haven't registered yet! Please register before trying again"
         )
+
 
 # registration frame function
 def show_registration_frame():
@@ -694,16 +746,19 @@ def show_registration_frame():
     login_frame.pack_forget()
     captcha_frame.pack_forget()
 
+
 # login frame function
 def show_login_frame():
     login_frame.pack(padx=50, pady=50)
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
 
+
 # captcha generation
 def generate_captcha():
     captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
     captcha_label.config(text=captcha_text)
+
 
 # captcha frame function
 def show_captcha_frame():
@@ -711,6 +766,7 @@ def show_captcha_frame():
     captcha_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     registration_frame.pack_forget()
+
 
 # captcha verification
 def verify_captcha():
@@ -729,6 +785,7 @@ def verify_captcha():
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
         generate_captcha()
+
 
 # initialize window
 window = tk.Tk()
