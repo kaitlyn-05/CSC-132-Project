@@ -44,6 +44,10 @@ class Dashboard:
 
         self.load_tasks_csv()  # Load tasks from CSV
         self.update_task_list()  # Update the task list in the UI
+        self.load_schedule_csv()  # Load schedule from CSV
+        self.update_schedule_list()  # Update the schedule list in the UI
+        
+        
 
 
     def make_fullscreen(self):
@@ -93,6 +97,15 @@ class Dashboard:
         self.task_listbox_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
+        self.schedule_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        self.class_name_label.config( 
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        self.grade_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
         self.schedule_listbox_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
@@ -116,6 +129,15 @@ class Dashboard:
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.due_date_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.class_name_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.schedule_entry.config( 
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.grade_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.student_name_entry.config(
@@ -225,6 +247,32 @@ class Dashboard:
         )
         self.due_date_entry.grid(row=3, column=1, padx=10, pady=10)
 
+        self.class_name_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+)
+        self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
+
+        self.schedule_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+)
+        self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)   
+
+        self.grade_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+)
+        self.grade_entry.grid(row=3, column=3, padx=10, pady=10)
         # Button to add tasks
         self.add_task_button = tk.Button(
             self.root,
@@ -256,6 +304,15 @@ class Dashboard:
         self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
 
         # Schedule list display section (on the right side)
+        self.schedule_label = tk.Label(self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font)
+        self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
+
+        self.class_name_label = tk.Label(self.root, text="Class Name:", font=self.font)
+        self.class_name_label.grid(row=1, column=2, padx=10, pady=10, sticky="w")
+
+        self.grade_label = tk.Label(self.root, text="Grade:", font=self.font)
+        self.grade_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
+
         self.schedule_listbox_label = tk.Label(
             self.root, text="Your Schedule:", font=self.font
         )
@@ -553,28 +610,67 @@ class Dashboard:
         except Exception:
             print("Error: Cannot write to file.")
 
+    def load_schedule_csv(self):
+        try:
+            with open("schedule.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    self.classes[row[0]] = row[1]
+                    self.grades[row[0]] = float(row[2]) if row[2] != "N/A" else "N/A"
+            self.update_schedule_list()
+        except FileNotFoundError:
+            print("Schedule file not found, starting fresh.")
+
+    def save_schedule_csv(self):
+        try:
+            with open("schedule.csv", mode="w", newline="") as file:
+                writer = csv.writer(file)
+                for class_name, schedule in self.classes.items():
+                    grade = self.grades.get(class_name, "N/A")
+                    writer.writerow([class_name, schedule, grade])
+        except Exception:
+            print("Error: Cannot write to file.")
+
+    def update_schedule_list(self):
+        self.schedule_listbox.delete(0, tk.END)
+        for class_name, schedule in self.classes.items():
+            grade = self.grades.get(class_name, "N/A")
+            self.schedule_listbox.insert(tk.END, f"{class_name}: {schedule} (Grade: {grade})")
+
     def add_schedule(self):
-        # Add a class schedule along with its grade
-        class_name = simpledialog.askstring("Class Name", "Enter the class name:")
-        if class_name:
-            schedule = simpledialog.askstring(
-                "Class Schedule",
-                f"Enter the schedule for {class_name} (e.g. Mon 9-11 AM):",
-            )
-            if schedule:
-                grade = simpledialog.askfloat(
-                    f"Grade for {class_name}", "Enter the grade for this class:"
+        class_name = self.class_name_entry.get()
+        schedule = self.schedule_entry.get()
+        grade = self.grade_entry.get()
+
+        if class_name and schedule and grade:
+            try:
+                grade = float(grade) if grade != "N/A" else "N/A"
+                self.classes[class_name] = schedule
+                self.grades[class_name] = grade
+                self.save_schedule_csv()
+                self.update_schedule_list()
+                self.class_name_entry.delete(0, tk.END)
+                self.schedule_entry.delete(0, tk.END)
+                self.grade_entry.delete(0, tk.END)
+                messagebox.showinfo(
+                    "Class Added", f"Class '{class_name}' scheduled for {schedule} with grade {grade}."
                 )
-                if grade is not None:
-                    self.classes[class_name] = schedule
-                    self.grades[class_name] = grade
-                    self.schedule_listbox.insert(
-                        tk.END, f"{class_name}: {schedule} (Grade: {grade})"
-                    )
-                    messagebox.showinfo(
-                        "Class Added",
-                        f"Class '{class_name}' scheduled for {schedule} with grade {grade}.",
-                    )
+            except ValueError:
+                messagebox.showerror("Invalid Grade", "Please enter a valid grade.")
+        else:
+            messagebox.showwarning(
+                "Missing Information", "Please enter all class details (name, schedule, and grade)."
+            )
+
+    def handle_invalid_date(self, title, message):
+        messagebox.showerror(title, message)
+
+    def handle_missing_input(self, title, message):
+        messagebox.showwarning(title, message)
+
+    def calculate_days_left(self, due_date):
+        due_date = datetime.strptime(due_date, "%Y-%m-%d")
+        return (due_date - datetime.now()).days
 
     def add_grades(self):
         # Allow the user to add or update grades for a class
@@ -662,13 +758,8 @@ class Dashboard:
             )
 
     def calculate_days_left(self, due_date):
-        # Calculate the number of days left until the due date
-        try:
-            due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")
-            delta = due_date_obj - datetime.now()
-            return delta.days
-        except ValueError:
-            return 0
+        due_date = datetime.strptime(due_date, "%Y-%m-%d")
+        return (due_date - datetime.now()).days
 
 
 ############ Login/Registration/Captcha ############
