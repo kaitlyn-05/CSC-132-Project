@@ -10,12 +10,133 @@ import string
 import hashlib
 import os
 
+
+############ Login/Registration/Captcha ############
+
+
+# hashes a password for better security
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+# opens the registration frame
+def new_user():
+    """Opens the registration frame"""
+    login_frame.pack_forget()
+    show_registration_frame()
+
+
+# function that saves data in a CSV file
+# verifies that both the username and password are entered
+def save_data():
+    """Function that saves data to CSV file"""
+    username = username_entry_save.get().strip()
+    password = password_entry_save.get().strip()
+    result_label.config(text="")
+    # stores the entered username and password to a CSV File
+    # also verifies both a username and password are entered
+    if username and password:
+        hashed_password = hash_password(password)
+        if not os.path.exists("users.csv"):
+            with open("users.csv", "w") as file:
+                pass
+        with open("users.csv", "a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow([username, hashed_password])
+            # deletes the entries in the entry line
+        username_entry_save.delete(0, tk.END)
+        password_entry_save.delete(0, tk.END)
+        save_result_label.config(text="User saved successfully")
+        # then opens the login frame
+        show_login_frame()
+    else:
+        save_result_label.config(text="Please enter a username AND password.")
+
+
+# a fucntion to log in the user, verifies that the user is
+# registered
+def login():
+    """Function that logs the user in"""
+    username = username_entry_login.get().strip()
+    password = hash_password(password_entry_login.get().strip())
+    # trys the entered username and password
+    try:
+        with open("users.csv", "r") as file:
+            reader = csv.reader(file)
+            # if both are valid, it takes the user to a CAPTCHA verification frame
+            for row in reader:
+                if row[0].strip() == username and row[1].strip() == password:
+                    result_label.config(text="Login successful!")
+                    show_captcha_frame()
+                    captcha_entry.delete(0, tk.END)
+                    return
+            # if the user is registered, but the password is wrong
+            result_label.config(text="Invalid username or password")
+
+    # if the username or password are not found
+    except FileNotFoundError:
+        result_label.config(
+            text="Hmm, it seems like you haven't registered yet! Please register before trying again"
+        )
+
+
+# registration frame function
+def show_registration_frame():
+    registration_frame.pack(padx=50, pady=50)
+    login_frame.pack_forget()
+    captcha_frame.pack_forget()
+
+
+# login frame function
+def show_login_frame():
+    login_frame.pack(padx=50, pady=50)
+    registration_frame.pack_forget()
+    captcha_frame.pack_forget()
+
+
+# captcha generation
+def generate_captcha():
+    captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
+    captcha_label.config(text=captcha_text)
+
+
+# captcha frame function
+def show_captcha_frame():
+    generate_captcha()
+    captcha_frame.pack(padx=50, pady=50)
+    login_frame.pack_forget()
+    registration_frame.pack_forget()
+
+
+# captcha verification
+def verify_captcha():
+    user_input = captcha_entry.get().strip()
+    # prints the generated captcha
+    generated_captcha = captcha_label.cget("text")
+    captcha_entry.delete(0, tk.END)
+    # if the user entered the captcha correctly, its verified
+    # if not, the user is given another one
+    if user_input == generated_captcha:
+        captcha_result_label.config(text="Verified! Welcome!!")
+        window.withdraw()  # Hide the login window
+        dashboard_root = tk.Toplevel()  # Create a new window for the dashboard
+        username = username_entry_login.get().strip()
+        Dashboard(dashboard_root,username_entry_login.get())
+
+    else:
+        captcha_result_label.config(text="Incorrect input, try again!")
+        generate_captcha()
+
 ############ Dashboard ############
 
-
 class Dashboard:
-    def __init__(self, root):
+    def __init__(self, root,username):
         self.root = root
+        self.username=username
+        self.folder_path = f"my_{username}_folder"
+        os.makedirs(self.folder_path, exist_ok=True)
+        self.folder_path = f"my_{username}_folder"
+        self.attendance_file = os.path.join(self.folder_path, "attendance.csv")
         self.root.title("Academic Progress Tracker")
         self.make_fullscreen()
 
@@ -32,7 +153,6 @@ class Dashboard:
         self.font = ("Arial", 12)
 
         # variables
-        self.student_name_var = tk.StringVar()
         self.course_name_var = tk.StringVar()
         self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
         self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
@@ -112,9 +232,6 @@ class Dashboard:
         self.attendance_listbox.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        self.student_name_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
         self.course_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
@@ -138,9 +255,6 @@ class Dashboard:
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.grade_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
-        self.student_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.course_name_entry.config(
@@ -395,20 +509,6 @@ class Dashboard:
         )
         self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
 
-        # Student Name
-        self.student_name_label = tk.Label(
-            self.root, text="Student Name:", font=self.font
-        )
-        self.student_name_label.grid(row=0, column=4)
-        self.student_name_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            textvariable=self.student_name_var,
-            width=15,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.student_name_entry.grid(row=0, column=5)
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
@@ -467,27 +567,25 @@ class Dashboard:
 
     # collects the data from the input feilds
     def submit_attendance(self):
-        student_name = self.student_name_var.get()
         course_name = self.course_name_var.get()
         date = self.date_var.get()
         time = self.time_var.get()
         status = self.status_var.get()
-
+        file_path = os.path.join(self.folder_path, "attendance.csv")
         # Input validation
-        if not all([student_name, course_name, date, time]):
+        if not all([course_name, date, time]):
             print("All fields must be filled.")
             return
 
             # if all is good then continue
         try:
-            with open("attendance.csv", mode="a", newline="") as file:
+            with open(file_path, mode="a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow([student_name, course_name, date, time, status])
+                writer.writerow([course_name, date, time, status])
 
             print(
-                f"Attendance submitted successfully:\nStudent: {student_name}\nCourse: {course_name}\nDate: {date}\nTime: {time}"
+                f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
             )
-            self.student_name_var.set("")
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
@@ -503,11 +601,13 @@ class Dashboard:
     # updates the filter options after submission
     def update_filter_options(self):
         courses = set()
+        attendance_file = os.path.join(self.folder_path, "attendance.csv")
+
         try:
-            with open("attendance.csv", mode="r", newline="") as file:
+            with open(attendance_file, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    courses.add(row[1])
+                    courses.add(row[0])
         except FileNotFoundError:
             print("Attendance file not found.")
         # updates the course filter dropdown
@@ -524,10 +624,11 @@ class Dashboard:
     def filter_by_course(self):
         course_to_filter = self.course_filter_var.get()
         self.attendance_listbox.delete(0, tk.END)  # clears current list
+        attendance_file = os.path.join(self.folder_path, "attendance.csv")
 
         # Open the CSV file and read the records
         try:
-            with open("attendance.csv", mode="r", newline="") as file:
+            with open(attendance_file, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
                     # formats date and time with current date and time
@@ -602,8 +703,9 @@ class Dashboard:
             print("Tasks file not found, starting fresh.")
 
     def save_tasks_csv(self):
+        file_path = os.path.join(self.folder_path, "tasks.csv")
         try:
-            with open("tasks.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for task in self.tasks:
                     writer.writerow([task["task"], task["due_date"], task["created"]])
@@ -622,8 +724,9 @@ class Dashboard:
             print("Schedule file not found, starting fresh.")
 
     def save_schedule_csv(self):
+        file_path = os.path.join(self.folder_path, "schedule.csv")
         try:
-            with open("schedule.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for class_name, schedule in self.classes.items():
                     grade = self.grades.get(class_name, "N/A")
@@ -761,121 +864,6 @@ class Dashboard:
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
 
-
-############ Login/Registration/Captcha ############
-
-
-# hashes a password for better security
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-
-# opens the registration frame
-def new_user():
-    """Opens the registration frame"""
-    login_frame.pack_forget()
-    show_registration_frame()
-
-
-# function that saves data in a CSV file
-# verifies that both the username and password are entered
-def save_data():
-    """Function that saves data to CSV file"""
-    username = username_entry_save.get().strip()
-    password = password_entry_save.get().strip()
-    result_label.config(text="")
-    # stores the entered username and password to a CSV File
-    # also verifies both a username and password are entered
-    if username and password:
-        hashed_password = hash_password(password)
-        if not os.path.exists("users.csv"):
-            with open("users.csv", "w") as file:
-                pass
-        with open("users.csv", "a", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow([username, hashed_password])
-            # deletes the entries in the entry line
-        username_entry_save.delete(0, tk.END)
-        password_entry_save.delete(0, tk.END)
-        save_result_label.config(text="User saved successfully")
-        # then opens the login frame
-        show_login_frame()
-    else:
-        save_result_label.config(text="Please enter a username AND password.")
-
-
-# a fucntion to log in the user, verifies that the user is
-# registered
-def login():
-    """Function that logs the user in"""
-    username = username_entry_login.get().strip()
-    password = hash_password(password_entry_login.get().strip())
-    # trys the entered username and password
-    try:
-        with open("users.csv", "r") as file:
-            reader = csv.reader(file)
-            # if both are valid, it takes the user to a CAPTCHA verification frame
-            for row in reader:
-                if row[0].strip() == username and row[1].strip() == password:
-                    result_label.config(text="Login successful!")
-                    show_captcha_frame()
-                    captcha_entry.delete(0, tk.END)
-                    return
-            # if the user is registered, but the password is wrong
-            result_label.config(text="Invalid username or password")
-
-    # if the username or password are not found
-    except FileNotFoundError:
-        result_label.config(
-            text="Hmm, it seems like you haven't registered yet! Please register before trying again"
-        )
-
-
-# registration frame function
-def show_registration_frame():
-    registration_frame.pack(padx=50, pady=50)
-    login_frame.pack_forget()
-    captcha_frame.pack_forget()
-
-
-# login frame function
-def show_login_frame():
-    login_frame.pack(padx=50, pady=50)
-    registration_frame.pack_forget()
-    captcha_frame.pack_forget()
-
-
-# captcha generation
-def generate_captcha():
-    captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
-    captcha_label.config(text=captcha_text)
-
-
-# captcha frame function
-def show_captcha_frame():
-    generate_captcha()
-    captcha_frame.pack(padx=50, pady=50)
-    login_frame.pack_forget()
-    registration_frame.pack_forget()
-
-
-# captcha verification
-def verify_captcha():
-    user_input = captcha_entry.get().strip()
-    # prints the generated captcha
-    generated_captcha = captcha_label.cget("text")
-    captcha_entry.delete(0, tk.END)
-    # if the user entered the captcha correctly, its verified
-    # if not, the user is given another one
-    if user_input == generated_captcha:
-        captcha_result_label.config(text="Verified! Welcome!!")
-        window.withdraw()  # Hide the login window
-        dashboard_root = tk.Toplevel()  # Create a new window for the dashboard
-        Dashboard(dashboard_root)
-
-    else:
-        captcha_result_label.config(text="Incorrect input, try again!")
-        generate_captcha()
 
 
 # initialize window
