@@ -448,6 +448,9 @@ class Dashboard:
         self.update_task_list()  # Update the task list in the UI
         self.load_schedule_csv()  # Load schedule from CSV
         self.update_schedule_list()  # Update the schedule list in the UI
+        self.load_classes_csv()
+        self.load_goals_csv()  # Load goals from CSV
+        self.update_goal_listbox()  # Update the goal list in the UI
 
     def make_fullscreen(self):
         # Makes the app window fullscreen
@@ -499,7 +502,7 @@ class Dashboard:
         self.schedule_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        self.class_name_label.config(
+        self.class_name_label.config( 
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.grade_label.config(
@@ -511,6 +514,9 @@ class Dashboard:
         self.attendance_listbox.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
+        self.student_name_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
         self.course_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
@@ -520,6 +526,14 @@ class Dashboard:
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.filter.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+
+        self.goal_target_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        self.goal_name_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        
         # Update entry fields' background and foreground colors
         self.task_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
@@ -530,10 +544,13 @@ class Dashboard:
         self.class_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
-        self.schedule_entry.config(
+        self.schedule_entry.config( 
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.grade_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.student_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.course_name_entry.config(
@@ -545,6 +562,13 @@ class Dashboard:
         self.time_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
+        self.goal_target_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.goal_name_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        
         # Update listboxes' background and foreground colors
         self.task_listbox.config(
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
@@ -555,7 +579,9 @@ class Dashboard:
         self.attendance_listbox.config(
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
         )
-
+        self.goal_listbox.config(
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
+        )
         # Update buttons' background and foreground colors
         self.add_task_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
@@ -563,10 +589,10 @@ class Dashboard:
         self.schedule_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
-        self.grades_button.config(
+        self.update_class_grade_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
-        self.goal_button.config(
+        self.add_goal_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
         self.update_progress_button.config(
@@ -595,7 +621,7 @@ class Dashboard:
         )
 
     def my_widgets(self):
-        # Creates and arranges the widgets (UI elements) in the window
+    # Creates and arranges the widgets (UI elements) in the window
         self.header_label = tk.Label(
             self.root, text="Academic Progress Tracker", font=("Helvetica", 18, "bold")
         )
@@ -640,6 +666,10 @@ class Dashboard:
         )
         self.due_date_entry.grid(row=3, column=1, padx=10, pady=10)
 
+        # Schedule and Class inputs
+        self.class_name_label = tk.Label(self.root, text="Class Name:", font=self.font)
+        self.class_name_label.grid(row=1, column=2, padx=10, pady=10, sticky="w")
+
         self.class_name_entry = tk.Entry(
             self.root,
             font=self.font,
@@ -648,6 +678,9 @@ class Dashboard:
             fg=self.original_theme["entry_fg"],
         )
         self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
+
+        self.schedule_label = tk.Label(self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font)
+        self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
 
         self.schedule_entry = tk.Entry(
             self.root,
@@ -658,6 +691,9 @@ class Dashboard:
         )
         self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)
 
+        self.grade_label = tk.Label(self.root, text="Grade:", font=self.font)
+        self.grade_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
+
         self.grade_entry = tk.Entry(
             self.root,
             font=self.font,
@@ -666,7 +702,8 @@ class Dashboard:
             fg=self.original_theme["entry_fg"],
         )
         self.grade_entry.grid(row=3, column=3, padx=10, pady=10)
-        # Button to add tasks
+
+        # Button to add task
         self.add_task_button = tk.Button(
             self.root,
             text="Add Task",
@@ -679,6 +716,53 @@ class Dashboard:
             height=2,
         )
         self.add_task_button.grid(row=4, column=0, columnspan=2, pady=20)
+
+        # Goal input section
+        self.goal_target_label = tk.Label(self.root, text="Goal Target:", font=self.font)
+        self.goal_target_label.grid(row=7, column=0, padx=10, pady=10, sticky="w")
+
+        self.goal_target_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.goal_target_entry.grid(row=7, column=1, padx=10, pady=10)
+
+        self.goal_name_label = tk.Label(self.root, text="Goal Name:", font=self.font)
+        self.goal_name_label.grid(row=9, column=0, padx=10, pady=10, sticky="w")
+
+        self.goal_name_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.goal_name_entry.grid(row=9, column=1, padx=10, pady=10)
+
+        # Button to add the goal
+        self.add_goal_button = tk.Button(
+            self.root,
+            text="Add Goal",
+            font=self.font,
+            command=self.add_goal,
+            bg=self.original_theme["button_bg"],
+            fg=self.original_theme["button_fg"],
+        )
+        self.add_goal_button.grid(row=9, column=2, columnspan=2, padx=10, pady=10)
+
+        # Goal progress bar
+        self.goal_progress_label = tk.Label(
+            self.root, text="Goal Progress:", font=self.font
+        )
+        self.goal_progress_label.grid(row=8, column=0, padx=10, pady=10, sticky="w")
+
+        self.goal_progress_bar = tk.Canvas(
+            self.root, width=200, height=30, bg=self.original_theme["listbox_bg"]
+        )
+        self.goal_progress_bar.grid(row=8, column=1, padx=10, pady=10)
 
         # Task list display section
         self.task_listbox_label = tk.Label(
@@ -697,17 +781,6 @@ class Dashboard:
         self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
 
         # Schedule list display section (on the right side)
-        self.schedule_label = tk.Label(
-            self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font
-        )
-        self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
-
-        self.class_name_label = tk.Label(self.root, text="Class Name:", font=self.font)
-        self.class_name_label.grid(row=1, column=2, padx=10, pady=10, sticky="w")
-
-        self.grade_label = tk.Label(self.root, text="Grade:", font=self.font)
-        self.grade_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
-
         self.schedule_listbox_label = tk.Label(
             self.root, text="Your Schedule:", font=self.font
         )
@@ -723,6 +796,11 @@ class Dashboard:
         )
         self.schedule_listbox.grid(row=6, column=2, columnspan=2, padx=20, pady=20)
 
+
+        self.goal_target_label = tk.Label(
+            self.root, text="Goal Target:", font=self.font
+        )
+        self.goal_target_label.grid(row=7, column=0, padx=10, pady=10, sticky="w")
         # Button to add class schedules
         self.schedule_button = tk.Button(
             self.root,
@@ -737,34 +815,19 @@ class Dashboard:
         )
         self.schedule_button.grid(row=4, column=2, pady=10)
 
-        # Button to add grades
-        self.grades_button = tk.Button(
+        # Button to update grade
+        self.update_class_grade_button = tk.Button(
             self.root,
-            text="Add Grades",
+            text="Update Grade",
             font=self.font,
-            command=self.add_grades,
+            command=self.update_class_grade,
             bg=self.original_theme["button_bg"],
             fg=self.original_theme["button_fg"],
             relief="solid",
             width=20,
             height=2,
         )
-        self.grades_button.grid(row=7, column=2, pady=10)
-
-        # Goals section
-        self.goal_button = tk.Button(
-            self.root,
-            text="Set Goals",
-            font=self.font,
-            command=self.add_goal,
-            bg=self.original_theme["button_bg"],
-            fg=self.original_theme["button_fg"],
-            relief="solid",
-            width=20,
-            height=2,
-        )
-        self.goal_button.grid(row=7, column=0, columnspan=2, pady=20)
-
+        self.update_class_grade_button.grid(row=4, column=3, pady=10)
         # Goal progress bar
         self.goal_progress_label = tk.Label(
             self.root, text="Goal Progress:", font=self.font
@@ -785,11 +848,23 @@ class Dashboard:
             bg=self.original_theme["button_bg"],
             fg=self.original_theme["button_fg"],
             relief="solid",
-            width=20,
-            height=2,
         )
-        self.update_progress_button.grid(row=10, column=0, columnspan=2, pady=20)
+        self.update_progress_button.grid(row=7, column=2, columnspan=2, padx=20, pady=10)
 
+        # Student Name
+        self.student_name_label = tk.Label(
+            self.root, text="Student Name:", font=self.font
+        )
+        self.student_name_label.grid(row=0, column=4)
+        self.student_name_entry = tk.Entry(
+            self.root,
+            font=self.font,
+            textvariable=self.student_name_var,
+            width=15,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.student_name_entry.grid(row=0, column=5)
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
@@ -845,6 +920,9 @@ class Dashboard:
             self.root, text="Filter Attendance", command=self.filter_by_course
         )
         self.filter_attendance_button.grid(row=8, column=4, columnspan=2)
+        # Goal Progress Listbox
+        self.goal_listbox = tk.Listbox(self.root, height=10, width=50)
+        self.goal_listbox.grid(row=8, column=2, columnspan=2)
 
     # collects the data from the input feilds
     def submit_attendance(self):
@@ -1028,9 +1106,8 @@ class Dashboard:
             print("Schedule file not found, starting fresh.")
 
     def save_schedule_csv(self):
-        file_path = os.path.join(self.folder_path, "schedule.csv")
         try:
-            with open(file_path, mode="w", newline="") as file:
+            with open("schedule.csv", mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for class_name, schedule in self.classes.items():
                     grade = self.grades.get(class_name, "N/A")
@@ -1042,9 +1119,7 @@ class Dashboard:
         self.schedule_listbox.delete(0, tk.END)
         for class_name, schedule in self.classes.items():
             grade = self.grades.get(class_name, "N/A")
-            self.schedule_listbox.insert(
-                tk.END, f"{class_name}: {schedule} (Grade: {grade})"
-            )
+            self.schedule_listbox.insert(tk.END, f"{class_name}: {schedule} (Grade: {grade})")
 
     def add_schedule(self):
         class_name = self.class_name_entry.get()
@@ -1062,17 +1137,69 @@ class Dashboard:
                 self.schedule_entry.delete(0, tk.END)
                 self.grade_entry.delete(0, tk.END)
                 messagebox.showinfo(
-                    "Class Added",
-                    f"Class '{class_name}' scheduled for {schedule} with grade {grade}.",
+                    "Class Added", f"Class '{class_name}' scheduled for {schedule} with grade {grade}."
                 )
             except ValueError:
                 messagebox.showerror("Invalid Grade", "Please enter a valid grade.")
         else:
             messagebox.showwarning(
-                "Missing Information",
-                "Please enter all class details (name, schedule, and grade).",
+                "Missing Information", "Please enter all class details (name, schedule, and grade)."
             )
 
+    def update_class_grade(self):
+        selected_class = self.schedule_listbox.curselection()  # Make sure schedule_listbox is correct
+        
+        if selected_class:
+            class_name = self.schedule_listbox.get(selected_class[0]).split(":")[0]
+
+            if class_name in self.classes:  # Ensure class exists in dictionary
+                grade = simpledialog.askfloat(
+                    "Update Class Grade",
+                    f"Enter grade for class '{class_name}' (current grade: {self.classes[class_name]['grade']}):",
+                    parent=self.root,
+                    minvalue=0,
+                    maxvalue=100,
+                )
+
+                if grade is not None:
+                    # Update the class's grade
+                    self.classes[class_name]["grade"] = grade
+                    self.save_classes_csv()
+                    self.update_schedule_listbox()
+                    messagebox.showinfo("Class Grade Updated", f"Grade for '{class_name}' updated to {grade}.")
+                else:
+                    messagebox.showwarning("Missing Grade", "No grade entered.")
+            else:
+                messagebox.showwarning("Class Not Found", f"Class '{class_name}' not found in records.")
+        else:
+            messagebox.showwarning("Class Not Selected", "Please select a class from the list.")
+
+    def update_schedule_listbox(self):
+        self.schedule_listbox.delete(0, tk.END)
+        for class_name, class_data in self.classes.items():
+            self.schedule_listbox.insert(tk.END, f"{class_name}: {class_data.get('grade', 'N/A')}")
+
+    def save_classes_csv(self):
+        try:
+            with open("classes.csv", mode="w", newline="") as file:
+                writer = csv.writer(file)
+                for class_name, class_data in self.classes.items():
+                    writer.writerow([class_name, class_data.get("grade", "N/A")])
+        except Exception as e:
+            print(f"Error saving classes: {e}")
+
+    def load_classes_csv(self):
+        try:
+            with open("classes.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    class_name = row[0]
+                    grade = row[1]
+                    self.classes[class_name] = {"grade": grade}  # Ensure it is a dictionary with 'grade'
+            self.update_schedule_listbox()  # Update listbox after loading classes
+        except FileNotFoundError:
+            print("No saved classes found.")
+                            
     def handle_invalid_date(self, title, message):
         messagebox.showerror(title, message)
 
@@ -1083,95 +1210,137 @@ class Dashboard:
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
 
-    def add_grades(self):
-        # Allow the user to add or update grades for a class
-        class_name = simpledialog.askstring(
-            "Class Name", "Enter the class name to add grades:"
-        )
-        if class_name and class_name in self.classes:
-            grade = simpledialog.askfloat(
-                f"Grade for {class_name}", f"Enter the grade for {class_name}:"
-            )
-            if grade is not None:
-                self.grades[class_name] = grade
-                messagebox.showinfo(
-                    "Grade Added", f"Grade for '{class_name}' added as {grade}."
-                )
-        else:
-            messagebox.showwarning(
-                "Class Not Found",
-                f"Class '{class_name}' not found. Please add the class first.",
-            )
-
     def add_goal(self):
-        # Allow the user to set a new goal
-        goal_name = simpledialog.askstring(
-            "Goal Name", "Enter the goal you want to set:"
-        )
-        if goal_name:
-            target = simpledialog.askinteger(
-                "Goal Target", f"Enter the target value for {goal_name}:"
-            )
-            if target:
+        goal_name = self.goal_name_entry.get()
+        target = self.goal_target_entry.get()
+
+        if goal_name and target:
+            try:
+                target = int(target)  # Ensure the target is an integer
                 self.goals[goal_name] = {"target": target, "progress": 0}
-                messagebox.showinfo(
-                    "Goal Set", f"Goal '{goal_name}' set with target value {target}."
-                )
+                self.save_goals_csv()  # Save the new goal to CSV
+                self.update_goal_listbox()  # Update the goal listbox
+                # Clear entries after adding goal
+                self.goal_name_entry.delete(0, tk.END)
+                self.goal_target_entry.delete(0, tk.END)
+                messagebox.showinfo("Goal Added", f"Goal '{goal_name}' set with target {target}.")
+            except ValueError:
+                messagebox.showerror("Invalid Target", "Please enter a valid integer for the target.")
+        else:
+            messagebox.showwarning("Missing Information", "Please enter both goal name and target.")
+
+
 
     def update_goal_progress(self):
-        # Update the progress of a set goal
-        goal_name = simpledialog.askstring(
-            "Goal Name", "Enter the goal you want to update:"
-        )
-        if goal_name and goal_name in self.goals:
+        # Get the selected goal from the listbox
+        selected_goal = self.goal_listbox.curselection()
+        
+        if selected_goal:
+            goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
+            
+            # Show a pop-up dialog to ask for the progress value
             progress = simpledialog.askinteger(
-                "Goal Progress", f"Enter the current progress for {goal_name}:"
+                "Update Goal Progress",  # Title of the dialog
+                f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
+                parent=self.root,
+                minvalue=0,  # Minimum allowed progress
+                maxvalue=self.goals[goal_name]["target"],  # Maximum allowed progress (cannot exceed target)
             )
-            if progress is not None:
-                # Ensure the progress is valid (not less than previous progress and not exceeding the target)
-                if (
-                    progress >= self.goals[goal_name]["progress"]
-                    and progress <= self.goals[goal_name]["target"]
-                ):
+            
+            if progress is not None:  # If user entered a valid value (not canceled)
+                # Check if the progress is valid
+                if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
+                    # Update the goal's progress
                     self.goals[goal_name]["progress"] = progress
-                    self.update_goal_progress_bar()
-                    messagebox.showinfo(
-                        "Goal Progress Updated",
-                        f"Progress for '{goal_name}' updated to {progress}.",
-                    )
+                    
+                    # Save the updated goals to the CSV file
+                    self.save_goals_csv()
+                    
+                    # Update the goal listbox and progress bar
+                    self.update_goal_listbox()
+                    self.update_goal_progress_bar(goal_name)
+                
+                    # Show a success message
+                    messagebox.showinfo("Goal Progress Updated", f"Progress for '{goal_name}' updated to {progress}.")
                 else:
-                    messagebox.showwarning(
-                        "Invalid Progress",
-                        "Progress cannot be less than the previous value or greater than the target.",
-                    )
+                    # Show warning if the progress is invalid (less than current or greater than target)
+                    messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
             else:
-                messagebox.showwarning(
-                    "Invalid Input", "Please enter a valid progress value."
-                )
+                # Show warning if no progress was entered
+                messagebox.showwarning("Missing Progress", "No progress entered.")
         else:
-            messagebox.showwarning(
-                "Goal Not Found", "Goal not found. Please set the goal first."
-            )
+            # Show warning if no goal is selected
+            messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
 
-    def update_goal_progress_bar(self):
-        # Update the goal progress bar to reflect the current progress
+    def update_goal_listbox(self):
+        # Clear current listbox items
+        self.goal_listbox.delete(0, tk.END)
+        
+        # Insert each goal into the listbox
         for goal_name, goal in self.goals.items():
-            progress_percentage = (goal["progress"] / goal["target"]) * 100
-            self.goal_progress_bar.delete("all")
-            self.goal_progress_bar.create_rectangle(
-                0, 0, progress_percentage * 2, 30, fill="#4CAF50"
-            )
-            self.goal_progress_bar.create_text(
-                progress_percentage * 2,
-                15,
-                text=f"{goal['progress']}/{goal['target']}",
-                anchor=tk.CENTER,
+            self.goal_listbox.insert(
+                tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}"
             )
 
+    def save_goals_csv(self):
+        try:
+            with open("goals.csv", mode="w", newline="") as file:
+                writer = csv.writer(file)
+                for goal_name, goal in self.goals.items():
+                    writer.writerow([goal_name, goal["target"], goal["progress"]])
+        except Exception as e:
+            print(f"Error saving goals: {e}")
+
+    def load_goals_csv(self):
+        try:
+            with open("goals.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    goal_name = row[0]
+                    target = int(row[1])
+                    progress = int(row[2])
+                    self.goals[goal_name] = {"target": target, "progress": progress}
+            self.update_goal_listbox()  # Update listbox after loading goals
+        except FileNotFoundError:
+            print("No saved goals found.")
+
+    def update_goal_progress_bar(self, selected_goal_name=None):
+        # Clear the progress bar before updating
+        self.goal_progress_bar.delete("all")
+        
+        # Update the progress bar based on the selected goal
+        if selected_goal_name is None:  # If no goal is selected, update based on the first goal
+            selected_goal_name = list(self.goals.keys())[0]
+        
+        goal = self.goals[selected_goal_name]
+        progress_percentage = goal["progress"] / goal["target"]  # Fraction of progress
+        
+        # Set the maximum width of the progress bar
+        max_width = 300  # Canvas width is fixed at 300px
+        
+        # Calculate the progress width as a fraction of the maximum width
+        progress_width = progress_percentage * max_width
+        
+        # Create a rectangle to represent the progress on the progress bar
+        self.goal_progress_bar.create_rectangle(
+            0, 0, progress_width, 30, fill="#4CAF50"
+        )
+        
+        # Create text to display the current progress in the middle of the progress bar
+        self.goal_progress_bar.create_text(
+            progress_width / 2, 15,  # Position text in the middle of the progress bar
+            text=f"{goal['progress']}/{goal['target']}",
+            anchor=tk.CENTER,
+            fill="white"
+    )
+        
+            
+  
     def calculate_days_left(self, due_date):
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
-
+    
+  ############ Login/Registration/Captcha ############  
 
 # initialize window
 window = tk.Tk()
