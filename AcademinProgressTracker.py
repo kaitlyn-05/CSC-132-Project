@@ -10,7 +10,263 @@ import string
 import hashlib
 import os
 
+############ Function for GPIO colorways ###########
+import requests
+import json
+import time
 
+
+def colorSpaz():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+
+
+def overlay_on():
+    body = {
+        "command": "Overlay Model Effect",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": [
+            "LEDs",
+            "Enabled",
+            "WLED - Colorloop",
+            "Horizontal",
+            "128",
+            "128",
+            "128",
+            "Default",
+            "#ff0000",
+            "#0000ff",
+            "#00ff00",
+        ],
+    }
+    url = "http://172.16.1.2/api/command"
+
+    headers = {"Content-Type": "application/json"}
+    requests.post(url, headers=headers, json=body)
+
+
+def green_first():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-3", "#008000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def yellow_second():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "4-6", "#FFFF00"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def orange_third():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "7-9", "#FFA500"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def dark_orange_fourth():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "10-12", "#d12b08"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def red_fifth():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "13-15", "#FF0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def loading_green():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "WLED - Scan",
+                "Horizontal",
+                "128",
+                "239",
+                "87",
+                "false",
+                "* Colors 1&2",
+                "#04ff00",
+                "#000000",
+                "#000000",
+            ],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def led_pixel(leds, color):
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Fill",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [leds, "Enabled", color],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.post(url, headers=headers, data=payload)
+
+
+def overlay_off():
+    headers = {"Content-Type": "application/json"}
+    url = "http://172.16.1.2/api/command"
+
+    body = {
+        "command": "Overlay Model State",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": ["LEDs", "Disabled"],
+    }
+    requests.post(url, headers=headers, json=body)
+
+
+def all_off():
+    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
+
+    payload = json.dumps(["LEDs"])
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def turn_off_single():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Stop",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-15", "#ff0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def static_off():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Clear",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["Led1,Led2,Led3,Led4,Led5,LEDs"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+
+def main_off():
+    turn_off_single()
+    all_off()
+    static_off()
+    overlay_off()
+
+
+def turn_red():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+
+def turn_green():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+
+# makes sure everything is off before starting
+
+main_off()
 ############ Login/Registration/Captcha ############
 
 
@@ -49,6 +305,7 @@ def save_data():
         save_result_label.config(text="User saved successfully")
         # then opens the login frame
         show_login_frame()
+
     else:
         save_result_label.config(text="Please enter a username AND password.")
 
@@ -67,14 +324,29 @@ def login():
             for row in reader:
                 if row[0].strip() == username and row[1].strip() == password:
                     result_label.config(text="Login successful!")
+                    main_off()
+
+                    turn_green()
+                    time.sleep(0.4)
+                    main_off()
+                    static_off()
                     show_captcha_frame()
+                    main_off()
+                    loading_green()
                     captcha_entry.delete(0, tk.END)
                     return
             # if the user is registered, but the password is wrong
             result_label.config(text="Invalid username or password")
+            main_off()
+            turn_red()
+            time.sleep(0.4)
+            main_off()
+            loading_green()
 
     # if the username or password are not found
     except FileNotFoundError:
+        turn_red()
+        time.sleep(0.5)
         result_label.config(
             text="Hmm, it seems like you haven't registered yet! Please register before trying again"
         )
@@ -121,18 +393,28 @@ def verify_captcha():
         window.withdraw()  # Hide the login window
         dashboard_root = tk.Toplevel()  # Create a new window for the dashboard
         username = username_entry_login.get().strip()
-        Dashboard(dashboard_root,username_entry_login.get())
-
+        Dashboard(dashboard_root, username_entry_login.get())
+        main_off()
+        turn_green()  # Green for succes
+        time.sleep(0.3)
+        main_off()
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
+        main_off()
+        led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red if failed
+        time.sleep(0.4)
+        main_off()
+        loading_green()
         generate_captcha()
+
 
 ############ Dashboard ############
 
+
 class Dashboard:
-    def __init__(self, root,username):
+    def __init__(self, root, username):
         self.root = root
-        self.username=username
+        self.username = username
         self.folder_path = f"my_{username}_folder"
         os.makedirs(self.folder_path, exist_ok=True)
         self.folder_path = f"my_{username}_folder"
@@ -166,9 +448,6 @@ class Dashboard:
         self.update_task_list()  # Update the task list in the UI
         self.load_schedule_csv()  # Load schedule from CSV
         self.update_schedule_list()  # Update the schedule list in the UI
-        
-        
-
 
     def make_fullscreen(self):
         # Makes the app window fullscreen
@@ -220,7 +499,7 @@ class Dashboard:
         self.schedule_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        self.class_name_label.config( 
+        self.class_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.grade_label.config(
@@ -251,7 +530,7 @@ class Dashboard:
         self.class_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
-        self.schedule_entry.config( 
+        self.schedule_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.grade_entry.config(
@@ -367,7 +646,7 @@ class Dashboard:
             width=30,
             bg=self.original_theme["entry_bg"],
             fg=self.original_theme["entry_fg"],
-)
+        )
         self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
 
         self.schedule_entry = tk.Entry(
@@ -376,8 +655,8 @@ class Dashboard:
             width=30,
             bg=self.original_theme["entry_bg"],
             fg=self.original_theme["entry_fg"],
-)
-        self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)   
+        )
+        self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)
 
         self.grade_entry = tk.Entry(
             self.root,
@@ -385,7 +664,7 @@ class Dashboard:
             width=30,
             bg=self.original_theme["entry_bg"],
             fg=self.original_theme["entry_fg"],
-)
+        )
         self.grade_entry.grid(row=3, column=3, padx=10, pady=10)
         # Button to add tasks
         self.add_task_button = tk.Button(
@@ -418,7 +697,9 @@ class Dashboard:
         self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
 
         # Schedule list display section (on the right side)
-        self.schedule_label = tk.Label(self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font)
+        self.schedule_label = tk.Label(
+            self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font
+        )
         self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
 
         self.class_name_label = tk.Label(self.root, text="Class Name:", font=self.font)
@@ -572,12 +853,21 @@ class Dashboard:
         time = self.time_var.get()
         status = self.status_var.get()
         file_path = os.path.join(self.folder_path, "attendance.csv")
+
         # Input validation
         if not all([course_name, date, time]):
             print("All fields must be filled.")
-            return
+            main_off()
+            turn_red()
+            time.sleep(0.4)
+            main_off()
+            return main_off()
 
-            # if all is good then continue
+        # Debugging: Print file path and input data
+        print(file_path)
+        print(course_name, date, time, status)
+
+        # if all is good then continue
         try:
             with open(file_path, mode="a", newline="") as file:
                 writer = csv.writer(file)
@@ -586,16 +876,23 @@ class Dashboard:
             print(
                 f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
             )
+            turn_green()
+
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
             self.time_var.set(datetime.now().strftime("%H:%M"))
             self.status_var.set("Present")
-            # Update course filter and reset listbox
+            # Update course filter and reset listb
+            # ox
             self.update_filter_options()
             self.attendance_listbox.delete(0, tk.END)
-        except Exception:
-            print("Error: Cannot write to file.")
+        except Exception as e:
+            # Debugging: Print exception message
+            print(f"Error: {e}")
+            turn_red()
+            time.sleep(0.4)
+            main_off()
             # Reset fields
 
     # updates the filter options after submission
@@ -620,29 +917,36 @@ class Dashboard:
                 command=lambda course=course: self.course_filter_var.set(course),
             )
 
-    # function to filter the courses attendance records
+        # Function to filter the courses attendance records by date
+
     def filter_by_course(self):
-        course_to_filter = self.course_filter_var.get()
-        self.attendance_listbox.delete(0, tk.END)  # clears current list
+        course_to_filter = self.course_filter_var.get()  # Get the course to filter
+        self.attendance_listbox.delete(0, tk.END)  # Clear the listbox
         attendance_file = os.path.join(self.folder_path, "attendance.csv")
 
-        # Open the CSV file and read the records
         try:
             with open(attendance_file, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    # formats date and time with current date and time
-                    if course_to_filter == "All" or row[1] == course_to_filter:
-                        formatted_date = datetime.strptime(row[2], "%Y-%m-%d").strftime(
-                            "%B %d, %Y"
-                        )
-                        formatted_time = datetime.strptime(row[3], "%H:%M").strftime(
-                            "%I:%M %p"
-                        )
-                        self.attendance_listbox.insert(
-                            tk.END,
-                            f"{row[0]} - {row[1]} - {formatted_date} - {formatted_time} - {row[4]}",
-                        )
+                    # Ensure row has enough data before accessing indices
+                    if len(row) < 4:
+                        continue
+
+                    # Only show records matching the selected course
+                    if course_to_filter == "All" or row[0] == course_to_filter:
+                        try:
+                            formatted_date = datetime.strptime(
+                                row[1], "%Y-%m-%d"
+                            ).strftime("%B %d, %Y")
+                            formatted_time = datetime.strptime(
+                                row[2], "%H:%M"
+                            ).strftime("%I:%M %p")
+                            self.attendance_listbox.insert(
+                                tk.END,
+                                f"{row[0]} - {formatted_date} - {formatted_time} - {row[3]}",
+                            )
+                        except ValueError:
+                            continue  # Skip any rows with incorrect date formatting
         except FileNotFoundError:
             print("Attendance file not found.")
 
@@ -738,7 +1042,9 @@ class Dashboard:
         self.schedule_listbox.delete(0, tk.END)
         for class_name, schedule in self.classes.items():
             grade = self.grades.get(class_name, "N/A")
-            self.schedule_listbox.insert(tk.END, f"{class_name}: {schedule} (Grade: {grade})")
+            self.schedule_listbox.insert(
+                tk.END, f"{class_name}: {schedule} (Grade: {grade})"
+            )
 
     def add_schedule(self):
         class_name = self.class_name_entry.get()
@@ -756,13 +1062,15 @@ class Dashboard:
                 self.schedule_entry.delete(0, tk.END)
                 self.grade_entry.delete(0, tk.END)
                 messagebox.showinfo(
-                    "Class Added", f"Class '{class_name}' scheduled for {schedule} with grade {grade}."
+                    "Class Added",
+                    f"Class '{class_name}' scheduled for {schedule} with grade {grade}.",
                 )
             except ValueError:
                 messagebox.showerror("Invalid Grade", "Please enter a valid grade.")
         else:
             messagebox.showwarning(
-                "Missing Information", "Please enter all class details (name, schedule, and grade)."
+                "Missing Information",
+                "Please enter all class details (name, schedule, and grade).",
             )
 
     def handle_invalid_date(self, title, message):
@@ -865,7 +1173,6 @@ class Dashboard:
         return (due_date - datetime.now()).days
 
 
-
 # initialize window
 window = tk.Tk()
 window.geometry("400x300")
@@ -941,6 +1248,7 @@ LIGHT_THEME = {
     "listbox_fg": "#000000",
 }
 
+
 DARK_THEME = {
     "bg": "#333333",
     "fg": "#ffffff",
@@ -976,6 +1284,7 @@ PURPLE_THEME = {
 
 ############ MAIN ############
 show_login_frame()
+loading_green()
 window.mainloop()
 root = tk.Tk()
 Dashboard(root)
