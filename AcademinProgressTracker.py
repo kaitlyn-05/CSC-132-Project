@@ -828,6 +828,7 @@ class Dashboard:
             height=2,
         )
         self.update_class_grade_button.grid(row=4, column=3, pady=10)
+
         # Goal progress bar
         self.goal_progress_label = tk.Label(
             self.root, text="Goal Progress:", font=self.font
@@ -851,20 +852,6 @@ class Dashboard:
         )
         self.update_progress_button.grid(row=7, column=2, columnspan=2, padx=20, pady=10)
 
-        # Student Name
-        self.student_name_label = tk.Label(
-            self.root, text="Student Name:", font=self.font
-        )
-        self.student_name_label.grid(row=0, column=4)
-        self.student_name_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            textvariable=self.student_name_var,
-            width=15,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.student_name_entry.grid(row=0, column=5)
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
