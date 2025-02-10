@@ -17,7 +17,7 @@ import time
 
 
 def colorSpaz():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Overlay Model Effect",
@@ -63,14 +63,14 @@ def overlay_on():
             "#00ff00",
         ],
     }
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
 
 def green_first():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -86,7 +86,7 @@ def green_first():
 
 
 def yellow_second():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -102,7 +102,7 @@ def yellow_second():
 
 
 def orange_third():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -118,7 +118,7 @@ def orange_third():
 
 
 def dark_orange_fourth():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -133,7 +133,7 @@ def dark_orange_fourth():
 
 
 def red_fifth():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -148,7 +148,7 @@ def red_fifth():
 
 
 def loading_green():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -177,7 +177,7 @@ def loading_green():
 
 
 def led_pixel(leds, color):
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -194,7 +194,7 @@ def led_pixel(leds, color):
 
 def overlay_off():
     headers = {"Content-Type": "application/json"}
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     body = {
         "command": "Overlay Model State",
@@ -206,7 +206,7 @@ def overlay_off():
 
 
 def all_off():
-    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(["LEDs"])
     headers = {"Content-Type": "application/json"}
@@ -215,7 +215,7 @@ def all_off():
 
 
 def turn_off_single():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Stop",
@@ -230,7 +230,7 @@ def turn_off_single():
 
 
 def static_off():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -266,7 +266,7 @@ def turn_green():
 
 # makes sure everything is off before starting
 
-main_off()
+main_off() 
 ############ Login/Registration/Captcha ############
 
 
@@ -911,6 +911,66 @@ class Dashboard:
         self.goal_listbox = tk.Listbox(self.root, height=10, width=50)
         self.goal_listbox.grid(row=8, column=2, columnspan=2)
 
+    def update_points(self, points_earned):
+        """Update user points and check for badge unlocks."""
+        self.points += points_earned
+        self.save_user_points()
+        if self.points % 5 == 0:
+            self.show_badge_popup()
+
+    def show_badge_popup(self):
+        """Display a popup when a badge is earned."""
+        messagebox.showinfo("Badge Earned!", f"Congratulations, {self.username}! You've earned a new badge at {self.points} points!")
+
+    def load_user_points(self):
+        """Load user points from file, or set to 0 if new user."""
+        if not os.path.exists("user_points.csv"):
+            return 0
+        with open("user_points.csv", "r") as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[0] == self.username:
+                    return int(row[1])
+        return 0
+
+    def save_user_points(self):
+        """Save user points to file."""
+        users_data = []
+        found = False
+
+        if os.path.exists("user_points.csv"):
+            with open("user_points.csv", "r") as file:
+                reader = csv.reader(file)
+                users_data = list(reader)
+
+        for i, row in enumerate(users_data):
+            if row[0] == self.username:
+                users_data[i][1] = str(self.points)
+                found = True
+                break
+
+        if not found:
+            users_data.append([self.username, str(self.points)])
+
+        with open("user_points.csv", "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerows(users_data)
+
+    ### --- ACTIONS THAT GIVE POINTS --- ###
+
+    def complete_task(self):
+        """Mark task as complete and award points."""
+        # Assume task completion logic here
+        messagebox.showinfo("Task Completed", "You've completed a task!")
+        self.update_points(1)
+
+    def complete_goal(self):
+        """Mark goal as complete and award points."""
+        # Assume goal completion logic here
+        messagebox.showinfo("Goal Achieved", "You've completed a goal!")
+        self.update_points(1)
+
+
     # collects the data from the input feilds
     def submit_attendance(self):
         course_name = self.course_name_var.get()
@@ -952,6 +1012,10 @@ class Dashboard:
             # ox
             self.update_filter_options()
             self.attendance_listbox.delete(0, tk.END)
+            if self.status_var() == "Present":
+                self.grant_points(1)
+            else:
+                pass
         except Exception as e:
             # Debugging: Print exception message
             print(f"Error: {e}")
@@ -1093,8 +1157,9 @@ class Dashboard:
             print("Schedule file not found, starting fresh.")
 
     def save_schedule_csv(self):
+        file_path = os.path.join(self.folder_path, "schedule.csv")
         try:
-            with open("schedule.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for class_name, schedule in self.classes.items():
                     grade = self.grades.get(class_name, "N/A")
@@ -1167,8 +1232,9 @@ class Dashboard:
             self.schedule_listbox.insert(tk.END, f"{class_name}: {class_data.get('grade', 'N/A')}")
 
     def save_classes_csv(self):
+        file_path = os.path.join(self.folder_path, "goals.csv")
         try:
-            with open("classes.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for class_name, class_data in self.classes.items():
                     writer.writerow([class_name, class_data.get("grade", "N/A")])
@@ -1246,9 +1312,10 @@ class Dashboard:
                     # Update the goal listbox and progress bar
                     self.update_goal_listbox()
                     self.update_goal_progress_bar(goal_name)
-                
+
                     # Show a success message
                     messagebox.showinfo("Goal Progress Updated", f"Progress for '{goal_name}' updated to {progress}.")
+                    self.grant_points(1)
                 else:
                     # Show warning if the progress is invalid (less than current or greater than target)
                     messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
@@ -1301,7 +1368,7 @@ class Dashboard:
         
         goal = self.goals[selected_goal_name]
         progress_percentage = goal["progress"] / goal["target"]  # Fraction of progress
-        
+
         # Set the maximum width of the progress bar
         max_width = 300  # Canvas width is fixed at 300px
         
@@ -1327,6 +1394,27 @@ class Dashboard:
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
     
+
+
+    def grant_points(self, points_earned=1):
+        """Adds points, checks for badge, and saves progress."""
+        self.points += points_earned  # Add earned points
+
+        # Save updated points to file
+        file_path = os.path.join(self.folder_path, "points.csv")
+        with open(file_path, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow([self.points])  # Save points persistently
+
+        # Show badge popup if points are a multiple of 5
+        if self.points % 5 == 0:
+            self.show_badge_popup()
+        
+    
+    def show_badge_popup(self):
+        badge_level = self.points // 5  # Determine badge level
+        messagebox.showinfo("🎖 Badge Earned!", f"Congratulations! You've earned Badge {badge_level}!\nKeep up the great work!")
+
   ############ Login/Registration/Captcha ############  
 
 # initialize window
