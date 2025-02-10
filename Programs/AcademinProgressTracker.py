@@ -415,6 +415,7 @@ class Dashboard:
         os.makedirs(self.folder_path, exist_ok=True)
         self.folder_path = f"my_{username}_folder"
         self.attendance_file = os.path.join(self.folder_path, "attendance.csv")
+        self.points = self.load_user_points()
         self.root.title("Academic Progress Tracker")
         self.make_fullscreen()
 
@@ -926,41 +927,48 @@ class Dashboard:
     ####### BADGES AND POINTS #############
     def load_user_points(self):
         """Load user points from file, or set to 0 if new user."""
-        if not os.path.exists("user_points.csv"):
-            return 0
-        with open("user_points.csv", "r") as file:
+        file_path = os.path.join(self.folder_path, "user_points.csv")  # Ensure the correct path
+
+        if not os.path.exists(file_path):
+            return 0  # New user, return 0 points
+
+        with open(file_path, "r") as file:
             reader = csv.reader(file)
             for row in reader:
                 if row[0] == self.username:
                     return int(row[1])
-        return 0
+
+        return 0  # If user not found, start at 0
 
     def save_user_points(self):
         """Save user points to a file in the designated folder path."""
-        # Ensure the folder exists
-        os.makedirs(self.folder_path, exist_ok=True)
-
-        # Define the file path inside the method
         file_path = os.path.join(self.folder_path, "user_points.csv")
 
         users_data = []
-        found = False
+        found = False 
 
+        # Ensure folder exists
+        os.makedirs(self.folder_path, exist_ok=True)
+
+        # Read existing data if file exists
         if os.path.exists(file_path):
             with open(file_path, "r") as file:
                 reader = csv.reader(file)
                 users_data = list(reader)
 
+        # Update points if user exists
         for i, row in enumerate(users_data):
             if row[0] == self.username:
                 users_data[i][1] = str(self.points)
                 found = True
                 break
 
+        # If user not found, add new entry
         if not found:
             users_data.append([self.username, str(self.points)])
 
-        with open("user_points.csv", "w", newline="") as file:
+        # Write updated data
+        with open(file_path, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerows(users_data)
 
@@ -978,20 +986,18 @@ class Dashboard:
         badge_level = self.points // 5  # Determine badge level
         messagebox.showinfo(
             "🎖 Badge Earned!",
-            f"Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!",
+            f"Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!"
         )
 
-    def complete_task(self):
+    def completed_task(self):
         """Mark task as complete and award points."""
         messagebox.showinfo("Task Completed", "You've completed a task!")
-        self.update_points(1)  # ✅ Award 1 point
-        colorSpaz()
+        self.update_points(1)  
 
     def complete_goal(self):
         """Mark goal as complete and award points."""
         messagebox.showinfo("Goal Achieved", "You've completed a goal!")
-        self.update_points(1)  # ✅ Award 1 point
-        colorSpaz()
+        self.update_points(1)  
 
     ######## ATTENDANCE #############
     # collects the data from the input feilds
@@ -1160,6 +1166,7 @@ class Dashboard:
                 # Save the updated task list to CSV and update the display
                 self.save_tasks_csv()
                 self.update_task_list()
+                self.completed_task()
                 colorSpaz()
                 messagebox.showinfo(
                     "Task Completed",
@@ -1440,6 +1447,10 @@ class Dashboard:
                         "Invalid Progress",
                         "Progress cannot be less than the current value or greater than the target.",
                     )
+                if progress == self.goals[goal_name]["target"]:
+                    self.complete_goal()  # This will handle awarding points!
+                else:
+                    pass
             else:
                 # Show warning if no progress was entered
                 turn_red()
@@ -1523,6 +1534,82 @@ class Dashboard:
 
 
 ###### COURSE RECOMMENDATIONS #######
+    def load_program_courses(self):
+        """Loads program courses from a CSV file if it exists in the specified folder."""
+        program_courses = {}
+        course_file = os.path.join(self.folder_path, "program_courses.csv")
+
+        try:
+            with open(course_file, mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if len(row) > 1:
+                        prefix = row[0].strip().upper()
+                        courses = [course.strip() for course in row[1:]]
+                        program_courses[prefix] = courses
+        except FileNotFoundError:
+            print("Course file not found.")
+
+        return program_courses
+
+    def save_program_courses(self, program_courses):
+        """Saves program courses to a CSV file in the specified folder."""
+        course_file = os.path.join(self.folder_path, "program_courses.csv")
+
+        try:
+            with open(course_file, mode="w", newline="") as file:
+                writer = csv.writer(file)
+                for prefix, courses in program_courses.items():
+                    writer.writerow([prefix] + courses)
+        except Exception as e:
+            print(f"Error saving program courses: {e}")
+
+    def recommend_courses(self, taken_courses):
+        """Recommends courses that have not been taken."""
+        recommended = []
+        taken_set = set(taken_courses)
+        
+        for prefix, courses in self.program_courses.items():
+            for course in courses:
+                full_course_code = f"{prefix} {course}"
+                if full_course_code not in taken_set:
+                    recommended.append(full_course_code)
+        return recommended
+
+    def add_course(self):
+        """Adds courses to the program courses dictionary."""
+        prefix = self.prefix_entry.get().strip().upper()
+        course_numbers = self.course_entry.get().strip()
+        
+        if not prefix or not course_numbers:
+            messagebox.showwarning("Input Error", "Please enter a course prefix and at least one course number.")
+            return
+        
+        course_list = [course.strip() for course in course_numbers.split(',')]
+        
+        if prefix in self.program_courses:
+            self.program_courses[prefix].extend(course_list)
+        else:
+            self.program_courses[prefix] = course_list
+        
+        self.save_program_courses(self.program_courses)
+        self.prefix_entry.delete(0, tk.END)
+        self.course_entry.delete(0, tk.END)
+        messagebox.showinfo("Success", "Courses added successfully!")
+
+    def get_recommendations(self):
+        """Displays recommended courses."""
+        taken_courses = self.taken_entry.get().upper().split(',')
+        taken_courses = [course.strip() for course in taken_courses]
+        
+        recommended = self.recommend_courses(taken_courses)
+        
+        self.result_text.delete("1.0", tk.END)
+        if recommended:
+            self.result_text.insert(tk.END, "Recommended courses:\n" + "\n".join(recommended))
+        else:
+            self.result_text.insert(tk.END, "You have taken all available courses!")
+
 
 
 ######## SETUP ##########
