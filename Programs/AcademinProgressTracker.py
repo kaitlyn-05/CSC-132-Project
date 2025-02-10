@@ -1109,6 +1109,7 @@ class Dashboard:
                 "Input Error", "Please enter both task and due date."
             )
             turn_red()
+            
     def complete_task(self):
         selected_task = self.task_listbox.curselection()
 
