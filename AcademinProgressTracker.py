@@ -16,34 +16,6 @@ import json
 import time
 
 
-def colorSpaz():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
-    payload = json.dumps(
-        {
-            "command": "Overlay Model Effect",
-            "multisyncCommand": False,
-            "multisyncHosts": "",
-            "args": [
-                "LEDs",
-                "Enabled",
-                "Bars",
-                "Up",
-                "5000",
-                "4",
-                "3",
-                "5",
-                "#ff0000",
-                "#00ff00",
-                "#0000ff",
-                "#ef0aff",
-                "#ffea00",
-            ],
-        }
-    )
-
-    requests.request("POST", url, data=payload)
-
-
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -63,14 +35,14 @@ def overlay_on():
             "#00ff00",
         ],
     }
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
 
 def green_first():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -86,7 +58,7 @@ def green_first():
 
 
 def yellow_second():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -102,7 +74,7 @@ def yellow_second():
 
 
 def orange_third():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -118,7 +90,7 @@ def orange_third():
 
 
 def dark_orange_fourth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -133,7 +105,7 @@ def dark_orange_fourth():
 
 
 def red_fifth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -148,7 +120,7 @@ def red_fifth():
 
 
 def loading_green():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -177,7 +149,7 @@ def loading_green():
 
 
 def led_pixel(leds, color):
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -194,7 +166,7 @@ def led_pixel(leds, color):
 
 def overlay_off():
     headers = {"Content-Type": "application/json"}
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     body = {
         "command": "Overlay Model State",
@@ -206,7 +178,7 @@ def overlay_off():
 
 
 def all_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
 
     payload = json.dumps(["LEDs"])
     headers = {"Content-Type": "application/json"}
@@ -215,7 +187,7 @@ def all_off():
 
 
 def turn_off_single():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Stop",
@@ -230,7 +202,7 @@ def turn_off_single():
 
 
 def static_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -264,9 +236,40 @@ def turn_green():
     main_off()
 
 
+def colorSpaz():
+    main_off()
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+    time.sleep(1)
+    main_off()
+
+
 # makes sure everything is off before starting
 
-main_off() 
+main_off()
 ############ Login/Registration/Captcha ############
 
 
@@ -401,10 +404,7 @@ def verify_captcha():
     else:
         captcha_result_label.config(text="Incorrect input, try again!")
         main_off()
-        led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red if failed
-        time.sleep(0.4)
-        main_off()
-        loading_green()
+        turn_red()
         generate_captcha()
 
 
@@ -502,7 +502,7 @@ class Dashboard:
         self.schedule_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        self.class_name_label.config( 
+        self.class_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.grade_label.config(
@@ -512,9 +512,6 @@ class Dashboard:
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.attendance_listbox.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
-        self.student_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
         self.course_name_label.config(
@@ -533,7 +530,7 @@ class Dashboard:
         self.goal_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
-        
+
         # Update entry fields' background and foreground colors
         self.task_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
@@ -544,13 +541,10 @@ class Dashboard:
         self.class_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
-        self.schedule_entry.config( 
+        self.schedule_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.grade_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
-        self.student_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
         self.course_name_entry.config(
@@ -568,7 +562,7 @@ class Dashboard:
         self.goal_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
-        
+
         # Update listboxes' background and foreground colors
         self.task_listbox.config(
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
@@ -621,7 +615,7 @@ class Dashboard:
         )
 
     def my_widgets(self):
-    # Creates and arranges the widgets (UI elements) in the window
+        # Creates and arranges the widgets (UI elements) in the window
         self.header_label = tk.Label(
             self.root, text="Academic Progress Tracker", font=("Helvetica", 18, "bold")
         )
@@ -679,7 +673,9 @@ class Dashboard:
         )
         self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
 
-        self.schedule_label = tk.Label(self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font)
+        self.schedule_label = tk.Label(
+            self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font
+        )
         self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
 
         self.schedule_entry = tk.Entry(
@@ -718,7 +714,9 @@ class Dashboard:
         self.add_task_button.grid(row=4, column=0, columnspan=2, pady=20)
 
         # Goal input section
-        self.goal_target_label = tk.Label(self.root, text="Goal Target:", font=self.font)
+        self.goal_target_label = tk.Label(
+            self.root, text="Goal Target:", font=self.font
+        )
         self.goal_target_label.grid(row=7, column=0, padx=10, pady=10, sticky="w")
 
         self.goal_target_entry = tk.Entry(
@@ -796,7 +794,6 @@ class Dashboard:
         )
         self.schedule_listbox.grid(row=6, column=2, columnspan=2, padx=20, pady=20)
 
-
         self.goal_target_label = tk.Label(
             self.root, text="Goal Target:", font=self.font
         )
@@ -850,7 +847,9 @@ class Dashboard:
             fg=self.original_theme["button_fg"],
             relief="solid",
         )
-        self.update_progress_button.grid(row=7, column=2, columnspan=2, padx=20, pady=10)
+        self.update_progress_button.grid(
+            row=7, column=2, columnspan=2, padx=20, pady=10
+        )
 
         # Course Name
         self.course_name_label = tk.Label(self.root, text="Course Name:")
@@ -920,7 +919,10 @@ class Dashboard:
 
     def show_badge_popup(self):
         """Display a popup when a badge is earned."""
-        messagebox.showinfo("Badge Earned!", f"Congratulations, {self.username}! You've earned a new badge at {self.points} points!")
+        messagebox.showinfo(
+            "Badge Earned!",
+            f"Congratulations, {self.username}! You've earned a new badge at {self.points} points!",
+        )
 
     def load_user_points(self):
         """Load user points from file, or set to 0 if new user."""
@@ -963,13 +965,14 @@ class Dashboard:
         # Assume task completion logic here
         messagebox.showinfo("Task Completed", "You've completed a task!")
         self.update_points(1)
+        colorSpaz()
 
     def complete_goal(self):
         """Mark goal as complete and award points."""
         # Assume goal completion logic here
         messagebox.showinfo("Goal Achieved", "You've completed a goal!")
         self.update_points(1)
-
+        colorSpaz()
 
     # collects the data from the input feilds
     def submit_attendance(self):
@@ -986,7 +989,7 @@ class Dashboard:
             turn_red()
             time.sleep(0.4)
             main_off()
-            return main_off()
+            return
 
         # Debugging: Print file path and input data
         print(file_path)
@@ -1001,8 +1004,8 @@ class Dashboard:
             print(
                 f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
             )
-            turn_green()
 
+            turn_green()
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
@@ -1012,16 +1015,14 @@ class Dashboard:
             # ox
             self.update_filter_options()
             self.attendance_listbox.delete(0, tk.END)
-            if self.status_var() == "Present":
+            if self.status_var.get() == "Present":
                 self.grant_points(1)
-            else:
-                pass
+
+            turn_green()
         except Exception as e:
             # Debugging: Print exception message
             print(f"Error: {e}")
-            turn_red()
-            time.sleep(0.4)
-            main_off()
+
             # Reset fields
 
     # updates the filter options after submission
@@ -1101,6 +1102,7 @@ class Dashboard:
                 self.tasks.append(
                     {"task": task, "due_date": due_date, "created": datetime.now()}
                 )
+                turn_green()
                 self.save_tasks_csv()
                 self.update_task_list()
                 self.task_entry.delete(0, tk.END)
@@ -1109,10 +1111,12 @@ class Dashboard:
                 self.handle_invalid_date(
                     "Invalid Date", "Please enter a valid date format (YYYY-MM-DD)."
                 )
+                turn_red()
         else:
             self.handle_missing_input(
                 "Input Error", "Please enter both task and due date."
             )
+            turn_red()
 
     def update_task_list(self):
         # Update the displayed list of tasks with their due dates
@@ -1123,6 +1127,7 @@ class Dashboard:
                 tk.END,
                 f"{task['task']} - Due: {task['due_date']} (Days Left: {days_left})",
             )
+            turn_green()
 
     def load_tasks_csv(self):
         try:
@@ -1132,8 +1137,10 @@ class Dashboard:
                     {"task": row[0], "due_date": row[1], "created": row[2]}
                     for row in reader
                 ]
+                turn_green()
         except FileNotFoundError:
             print("Tasks file not found, starting fresh.")
+            turn_red()
 
     def save_tasks_csv(self):
         file_path = os.path.join(self.folder_path, "tasks.csv")
@@ -1142,8 +1149,10 @@ class Dashboard:
                 writer = csv.writer(file)
                 for task in self.tasks:
                     writer.writerow([task["task"], task["due_date"], task["created"]])
+                    turn_green()
         except Exception:
             print("Error: Cannot write to file.")
+            turn_red()
 
     def load_schedule_csv(self):
         try:
@@ -1153,8 +1162,10 @@ class Dashboard:
                     self.classes[row[0]] = row[1]
                     self.grades[row[0]] = float(row[2]) if row[2] != "N/A" else "N/A"
             self.update_schedule_list()
+            turn_green()
         except FileNotFoundError:
             print("Schedule file not found, starting fresh.")
+            
 
     def save_schedule_csv(self):
         file_path = os.path.join(self.folder_path, "schedule.csv")
@@ -1166,12 +1177,15 @@ class Dashboard:
                     writer.writerow([class_name, schedule, grade])
         except Exception:
             print("Error: Cannot write to file.")
+            turn_red()
 
     def update_schedule_list(self):
         self.schedule_listbox.delete(0, tk.END)
         for class_name, schedule in self.classes.items():
             grade = self.grades.get(class_name, "N/A")
-            self.schedule_listbox.insert(tk.END, f"{class_name}: {schedule} (Grade: {grade})")
+            self.schedule_listbox.insert(
+                tk.END, f"{class_name}: {schedule} (Grade: {grade})"
+            )
 
     def add_schedule(self):
         class_name = self.class_name_entry.get()
@@ -1188,19 +1202,27 @@ class Dashboard:
                 self.class_name_entry.delete(0, tk.END)
                 self.schedule_entry.delete(0, tk.END)
                 self.grade_entry.delete(0, tk.END)
+                turn_green()
                 messagebox.showinfo(
-                    "Class Added", f"Class '{class_name}' scheduled for {schedule} with grade {grade}."
+                    "Class Added",
+                    f"Class '{class_name}' scheduled for {schedule} with grade {grade}.",
                 )
+
             except ValueError:
+                turn_red()
                 messagebox.showerror("Invalid Grade", "Please enter a valid grade.")
         else:
+            turn_red()
             messagebox.showwarning(
-                "Missing Information", "Please enter all class details (name, schedule, and grade)."
+                "Missing Information",
+                "Please enter all class details (name, schedule, and grade).",
             )
 
     def update_class_grade(self):
-        selected_class = self.schedule_listbox.curselection()  # Make sure schedule_listbox is correct
-        
+        selected_class = (
+            self.schedule_listbox.curselection()
+        )  # Make sure schedule_listbox is correct
+
         if selected_class:
             class_name = self.schedule_listbox.get(selected_class[0]).split(":")[0]
 
@@ -1212,24 +1234,38 @@ class Dashboard:
                     minvalue=0,
                     maxvalue=100,
                 )
+                turn_green()
 
                 if grade is not None:
                     # Update the class's grade
                     self.classes[class_name]["grade"] = grade
                     self.save_classes_csv()
                     self.update_schedule_listbox()
-                    messagebox.showinfo("Class Grade Updated", f"Grade for '{class_name}' updated to {grade}.")
+                    turn_green()
+                    messagebox.showinfo(
+                        "Class Grade Updated",
+                        f"Grade for '{class_name}' updated to {grade}.",
+                    )
                 else:
+                    turn_red()
                     messagebox.showwarning("Missing Grade", "No grade entered.")
             else:
-                messagebox.showwarning("Class Not Found", f"Class '{class_name}' not found in records.")
+                turn_red()
+                messagebox.showwarning(
+                    "Class Not Found", f"Class '{class_name}' not found in records."
+                )
         else:
-            messagebox.showwarning("Class Not Selected", "Please select a class from the list.")
+            turn_red()
+            messagebox.showwarning(
+                "Class Not Selected", "Please select a class from the list."
+            )
 
     def update_schedule_listbox(self):
         self.schedule_listbox.delete(0, tk.END)
         for class_name, class_data in self.classes.items():
-            self.schedule_listbox.insert(tk.END, f"{class_name}: {class_data.get('grade', 'N/A')}")
+            self.schedule_listbox.insert(
+                tk.END, f"{class_name}: {class_data.get('grade', 'N/A')}"
+            )
 
     def save_classes_csv(self):
         file_path = os.path.join(self.folder_path, "goals.csv")
@@ -1248,11 +1284,15 @@ class Dashboard:
                 for row in reader:
                     class_name = row[0]
                     grade = row[1]
-                    self.classes[class_name] = {"grade": grade}  # Ensure it is a dictionary with 'grade'
-            self.update_schedule_listbox()  # Update listbox after loading classes
+                    self.classes[class_name] = {
+                        "grade": grade
+                    }  # Ensure it is a dictionary with 'grade'
+            self.update_schedule_listbox()
+            turn_green()  # Update listbox after loading classes
         except FileNotFoundError:
             print("No saved classes found.")
-                            
+            
+
     def handle_invalid_date(self, title, message):
         messagebox.showerror(title, message)
 
@@ -1276,60 +1316,84 @@ class Dashboard:
                 # Clear entries after adding goal
                 self.goal_name_entry.delete(0, tk.END)
                 self.goal_target_entry.delete(0, tk.END)
-                messagebox.showinfo("Goal Added", f"Goal '{goal_name}' set with target {target}.")
+                turn_green()
+                messagebox.showinfo(
+                    "Goal Added", f"Goal '{goal_name}' set with target {target}."
+                )
             except ValueError:
-                messagebox.showerror("Invalid Target", "Please enter a valid integer for the target.")
+                turn_red()
+                messagebox.showerror(
+                    "Invalid Target", "Please enter a valid integer for the target."
+                )
         else:
-            messagebox.showwarning("Missing Information", "Please enter both goal name and target.")
-
-
+            turn_red()
+            messagebox.showwarning(
+                "Missing Information", "Please enter both goal name and target."
+            )
 
     def update_goal_progress(self):
         # Get the selected goal from the listbox
         selected_goal = self.goal_listbox.curselection()
-        
+
         if selected_goal:
             goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
-            
+
             # Show a pop-up dialog to ask for the progress value
             progress = simpledialog.askinteger(
                 "Update Goal Progress",  # Title of the dialog
                 f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
                 parent=self.root,
                 minvalue=0,  # Minimum allowed progress
-                maxvalue=self.goals[goal_name]["target"],  # Maximum allowed progress (cannot exceed target)
+                maxvalue=self.goals[goal_name][
+                    "target"
+                ],  # Maximum allowed progress (cannot exceed target)
             )
-            
+
             if progress is not None:  # If user entered a valid value (not canceled)
                 # Check if the progress is valid
-                if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
+                if (
+                    progress >= self.goals[goal_name]["progress"]
+                    and progress <= self.goals[goal_name]["target"]
+                ):
                     # Update the goal's progress
                     self.goals[goal_name]["progress"] = progress
-                    
+
                     # Save the updated goals to the CSV file
                     self.save_goals_csv()
-                    
+
                     # Update the goal listbox and progress bar
                     self.update_goal_listbox()
                     self.update_goal_progress_bar(goal_name)
 
                     # Show a success message
-                    messagebox.showinfo("Goal Progress Updated", f"Progress for '{goal_name}' updated to {progress}.")
+                    turn_green()
+                    messagebox.showinfo(
+                        "Goal Progress Updated",
+                        f"Progress for '{goal_name}' updated to {progress}.",
+                    )
                     self.grant_points(1)
                 else:
                     # Show warning if the progress is invalid (less than current or greater than target)
-                    messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
+                    turn_red()
+                    messagebox.showwarning(
+                        "Invalid Progress",
+                        "Progress cannot be less than the current value or greater than the target.",
+                    )
             else:
                 # Show warning if no progress was entered
+                turn_red()
                 messagebox.showwarning("Missing Progress", "No progress entered.")
         else:
+            turn_red()
             # Show warning if no goal is selected
-            messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
+            messagebox.showwarning(
+                "Goal Not Selected", "Please select a goal from the list."
+            )
 
     def update_goal_listbox(self):
         # Clear current listbox items
         self.goal_listbox.delete(0, tk.END)
-        
+
         # Insert each goal into the listbox
         for goal_name, goal in self.goals.items():
             self.goal_listbox.insert(
@@ -1361,40 +1425,39 @@ class Dashboard:
     def update_goal_progress_bar(self, selected_goal_name=None):
         # Clear the progress bar before updating
         self.goal_progress_bar.delete("all")
-        
+
         # Update the progress bar based on the selected goal
-        if selected_goal_name is None:  # If no goal is selected, update based on the first goal
+        if (
+            selected_goal_name is None
+        ):  # If no goal is selected, update based on the first goal
             selected_goal_name = list(self.goals.keys())[0]
-        
+
         goal = self.goals[selected_goal_name]
         progress_percentage = goal["progress"] / goal["target"]  # Fraction of progress
 
         # Set the maximum width of the progress bar
         max_width = 300  # Canvas width is fixed at 300px
-        
+
         # Calculate the progress width as a fraction of the maximum width
         progress_width = progress_percentage * max_width
-        
+
         # Create a rectangle to represent the progress on the progress bar
         self.goal_progress_bar.create_rectangle(
             0, 0, progress_width, 30, fill="#4CAF50"
         )
-        
+
         # Create text to display the current progress in the middle of the progress bar
         self.goal_progress_bar.create_text(
-            progress_width / 2, 15,  # Position text in the middle of the progress bar
+            progress_width / 2,
+            15,  # Position text in the middle of the progress bar
             text=f"{goal['progress']}/{goal['target']}",
             anchor=tk.CENTER,
-            fill="white"
-    )
-        
-            
-  
+            fill="white",
+        )
+
     def calculate_days_left(self, due_date):
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
-    
-
 
     def grant_points(self, points_earned=1):
         """Adds points, checks for badge, and saves progress."""
@@ -1409,13 +1472,16 @@ class Dashboard:
         # Show badge popup if points are a multiple of 5
         if self.points % 5 == 0:
             self.show_badge_popup()
-        
-    
+
     def show_badge_popup(self):
         badge_level = self.points // 5  # Determine badge level
-        messagebox.showinfo("🎖 Badge Earned!", f"Congratulations! You've earned Badge {badge_level}!\nKeep up the great work!")
+        messagebox.showinfo(
+            "🎖 Badge Earned!",
+            f"Congratulations! You've earned Badge {badge_level}!\nKeep up the great work!",
+        )
 
-  ############ Login/Registration/Captcha ############  
+
+############ Login/Registration/Captcha ############
 
 # initialize window
 window = tk.Tk()
