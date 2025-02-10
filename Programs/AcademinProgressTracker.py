@@ -548,6 +548,9 @@ class Dashboard:
         self.add_task_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
+        self.complete_task_button.config(
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
+        )
         self.schedule_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
@@ -676,10 +679,24 @@ class Dashboard:
             bg=self.original_theme["button_bg"],
             fg=self.original_theme["button_fg"],
             relief="solid",
-            width=20,
+            width=10,
             height=2,
         )
-        self.add_task_button.grid(row=4, column=0, columnspan=2, pady=20)
+        self.add_task_button.grid(row=4, column=0, columnspan=1, pady=10)
+
+# Button to update task for completion 
+        self.complete_task_button = tk.Button(
+            self.root,
+            text="Update Task",
+            font=self.font,
+            command=self.complete_task,
+            bg=self.original_theme["button_bg"],
+            fg=self.original_theme["button_fg"],
+            relief="solid",
+            width=10,
+            height=2,
+        )
+        self.complete_task_button.grid(row=4, column=1, columnspan=1, pady=10)
 
         # Goal input section
         self.goal_target_label = tk.Label(
@@ -1092,6 +1109,30 @@ class Dashboard:
                 "Input Error", "Please enter both task and due date."
             )
             turn_red()
+    def complete_task(self):
+        selected_task = self.task_listbox.curselection()
+
+        if selected_task:
+            task = self.task_listbox.get(selected_task[0])
+            task_name = task.split(" - ")[0]
+            
+            # Confirm if user wants to mark the task as completed
+            confirm = messagebox.askyesno(
+                "Complete Task", f"Are you sure you want to mark '{task_name}' as complete?"
+            )
+            
+            if confirm:
+                # Remove the completed task from the task list
+                self.tasks = [task for task in self.tasks if task["task"] != task_name]
+                
+                # Save the updated task list to CSV and update the display
+                self.save_tasks_csv()
+                self.update_task_list()
+                messagebox.showinfo("Task Completed", f"Task '{task_name}' has been completed and removed.")
+            else:
+                messagebox.showinfo("Task Not Completed", "Task completion was canceled.")
+        else:
+            messagebox.showwarning("Task Not Selected", "Please select a task from the list.")
 
     def update_task_list(self):
         # Update the displayed list of tasks with their due dates
