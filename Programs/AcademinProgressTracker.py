@@ -9,13 +9,10 @@ import csv
 import string
 import hashlib
 import os
-
-############ Function for GPIO colorways ###########
 import requests
 import json
 import time
-
-
+############ Function for GPIO colorways ###########
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -40,7 +37,6 @@ def overlay_on():
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
-
 def green_first():
     url = "http://172.16.1.2/api/command"
 
@@ -55,7 +51,6 @@ def green_first():
     headers = {"Content-Type": "application/json"}
 
     requests.request("POST", url, headers=headers, data=payload)
-
 
 def yellow_second():
     url = "http://172.16.1.2/api/command"
@@ -72,7 +67,6 @@ def yellow_second():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def orange_third():
     url = "http://172.16.1.2/api/command"
 
@@ -88,7 +82,6 @@ def orange_third():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def dark_orange_fourth():
     url = "http://172.16.1.2/api/command"
     payload = json.dumps(
@@ -103,7 +96,6 @@ def dark_orange_fourth():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def red_fifth():
     url = "http://172.16.1.2/api/command"
     payload = json.dumps(
@@ -117,7 +109,6 @@ def red_fifth():
     headers = {"Content-Type": "application/json"}
 
     requests.request("POST", url, headers=headers, data=payload)
-
 
 def loading_green():
     url = "http://172.16.1.2/api/command"
@@ -147,7 +138,6 @@ def loading_green():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def led_pixel(leds, color):
     url = "http://172.16.1.2/api/command"
 
@@ -163,7 +153,6 @@ def led_pixel(leds, color):
 
     requests.post(url, headers=headers, data=payload)
 
-
 def overlay_off():
     headers = {"Content-Type": "application/json"}
     url = "http://172.16.1.2/api/command"
@@ -176,7 +165,6 @@ def overlay_off():
     }
     requests.post(url, headers=headers, json=body)
 
-
 def all_off():
     url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
 
@@ -184,7 +172,6 @@ def all_off():
     headers = {"Content-Type": "application/json"}
 
     requests.request("POST", url, headers=headers, data=payload)
-
 
 def turn_off_single():
     url = "http://172.16.1.2/api/command"
@@ -199,7 +186,6 @@ def turn_off_single():
     headers = {"Content-Type": "application/json"}
 
     requests.request("POST", url, headers=headers, data=payload)
-
 
 def static_off():
     url = "http://172.16.1.2/api/command"
@@ -216,25 +202,21 @@ def static_off():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def main_off():
     turn_off_single()
     all_off()
     static_off()
     overlay_off()
 
-
 def turn_red():
     led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red color
     time.sleep(0.4)
     main_off()
 
-
 def turn_green():
     led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
     time.sleep(0.4)
     main_off()
-
 
 def colorSpaz():
     main_off()
@@ -266,24 +248,19 @@ def colorSpaz():
     time.sleep(1)
     main_off()
 
-
 # makes sure everything is off before starting
-
 main_off()
+
 ############ Login/Registration/Captcha ############
-
-
 # hashes a password for better security
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # opens the registration frame
 def new_user():
     """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
-
 
 # function that saves data in a CSV file
 # verifies that both the username and password are entered
@@ -311,7 +288,6 @@ def save_data():
 
     else:
         save_result_label.config(text="Please enter a username AND password.")
-
 
 # a fucntion to log in the user, verifies that the user is
 # registered
@@ -354,13 +330,11 @@ def login():
             text="Hmm, it seems like you haven't registered yet! Please register before trying again"
         )
 
-
 # registration frame function
 def show_registration_frame():
     registration_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     captcha_frame.pack_forget()
-
 
 # login frame function
 def show_login_frame():
@@ -368,12 +342,10 @@ def show_login_frame():
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
 
-
 # captcha generation
 def generate_captcha():
     captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
     captcha_label.config(text=captcha_text)
-
 
 # captcha frame function
 def show_captcha_frame():
@@ -381,7 +353,6 @@ def show_captcha_frame():
     captcha_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     registration_frame.pack_forget()
-
 
 # captcha verification
 def verify_captcha():
@@ -407,10 +378,7 @@ def verify_captcha():
         turn_red()
         generate_captcha()
 
-
 ############ Dashboard ############
-
-
 class Dashboard:
     def __init__(self, root, username):
         self.root = root
@@ -910,20 +878,7 @@ class Dashboard:
         self.goal_listbox = tk.Listbox(self.root, height=10, width=50)
         self.goal_listbox.grid(row=8, column=2, columnspan=2)
 
-    def update_points(self, points_earned):
-        """Update user points and check for badge unlocks."""
-        self.points += points_earned
-        self.save_user_points()
-        if self.points % 5 == 0:
-            self.show_badge_popup()
-
-    def show_badge_popup(self):
-        """Display a popup when a badge is earned."""
-        messagebox.showinfo(
-            "Badge Earned!",
-            f"Congratulations, {self.username}! You've earned a new badge at {self.points} points!",
-        )
-
+####### BADGES AND POINTS #############
     def load_user_points(self):
         """Load user points from file, or set to 0 if new user."""
         if not os.path.exists("user_points.csv"):
@@ -936,12 +891,18 @@ class Dashboard:
         return 0
 
     def save_user_points(self):
-        """Save user points to file."""
+        """Save user points to a file in the designated folder path."""
+        # Ensure the folder exists
+        os.makedirs(self.folder_path, exist_ok=True)
+
+        # Define the file path inside the method
+        file_path = os.path.join(self.folder_path, "user_points.csv")
+
         users_data = []
         found = False
 
-        if os.path.exists("user_points.csv"):
-            with open("user_points.csv", "r") as file:
+        if os.path.exists(file_path):
+            with open(file_path, "r") as file:
                 reader = csv.reader(file)
                 users_data = list(reader)
 
@@ -958,22 +919,35 @@ class Dashboard:
             writer = csv.writer(file)
             writer.writerows(users_data)
 
-    ### --- ACTIONS THAT GIVE POINTS --- ###
+    def update_points(self, points_earned):
+        """Update user points and check for badge unlocks."""
+        self.points += points_earned
+        self.save_user_points()
+        
+        # Show badge popup if points reach a multiple of 5
+        if self.points % 5 == 0:
+            self.show_badge_popup()
+
+    def show_badge_popup(self):
+        """Display a popup when a badge is earned."""
+        badge_level = self.points // 5  # Determine badge level
+        messagebox.showinfo(
+            "🎖 Badge Earned!",
+            f"Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!"
+        )
 
     def complete_task(self):
         """Mark task as complete and award points."""
-        # Assume task completion logic here
         messagebox.showinfo("Task Completed", "You've completed a task!")
-        self.update_points(1)
+        self.update_points(1)  # ✅ Award 1 point
         colorSpaz()
 
     def complete_goal(self):
         """Mark goal as complete and award points."""
-        # Assume goal completion logic here
         messagebox.showinfo("Goal Achieved", "You've completed a goal!")
-        self.update_points(1)
+        self.update_points(1)  # ✅ Award 1 point
         colorSpaz()
-
+######## ATTENDANCE #############
     # collects the data from the input feilds
     def submit_attendance(self):
         course_name = self.course_name_var.get()
@@ -1085,6 +1059,7 @@ class Dashboard:
         # Custom behavior for invalid date
         print(f"{title}: {message}")  #
 
+######## TASKS  ##########
     def handle_missing_input(self, title, message):
         """Handles missing task or due date input."""
         # Custom behavior for missing input
@@ -1154,6 +1129,7 @@ class Dashboard:
             print("Error: Cannot write to file.")
             turn_red()
 
+######## SCHEDULE/CLASSES ##########
     def load_schedule_csv(self):
         try:
             with open("schedule.csv", mode="r", newline="") as file:
@@ -1166,7 +1142,6 @@ class Dashboard:
         except FileNotFoundError:
             print("Schedule file not found, starting fresh.")
             
-
     def save_schedule_csv(self):
         file_path = os.path.join(self.folder_path, "schedule.csv")
         try:
@@ -1292,7 +1267,6 @@ class Dashboard:
         except FileNotFoundError:
             print("No saved classes found.")
             
-
     def handle_invalid_date(self, title, message):
         messagebox.showerror(title, message)
 
@@ -1303,6 +1277,7 @@ class Dashboard:
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
 
+######## GOALS ###########
     def add_goal(self):
         goal_name = self.goal_name_entry.get()
         target = self.goal_target_entry.get()
@@ -1401,14 +1376,15 @@ class Dashboard:
             )
 
     def save_goals_csv(self):
+        file_path = os.path.join(self.folder_path, "goals.csv")
         try:
-            with open("goals.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for goal_name, goal in self.goals.items():
                     writer.writerow([goal_name, goal["target"], goal["progress"]])
         except Exception as e:
             print(f"Error saving goals: {e}")
-
+            
     def load_goals_csv(self):
         try:
             with open("goals.csv", mode="r", newline="") as file:
@@ -1459,30 +1435,10 @@ class Dashboard:
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
 
-    def grant_points(self, points_earned=1):
-        """Adds points, checks for badge, and saves progress."""
-        self.points += points_earned  # Add earned points
-
-        # Save updated points to file
-        file_path = os.path.join(self.folder_path, "points.csv")
-        with open(file_path, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow([self.points])  # Save points persistently
-
-        # Show badge popup if points are a multiple of 5
-        if self.points % 5 == 0:
-            self.show_badge_popup()
-
-    def show_badge_popup(self):
-        badge_level = self.points // 5  # Determine badge level
-        messagebox.showinfo(
-            "🎖 Badge Earned!",
-            f"Congratulations! You've earned Badge {badge_level}!\nKeep up the great work!",
-        )
+###### COURSE RECOMMENDATIONS #######
 
 
-############ Login/Registration/Captcha ############
-
+######## SETUP ##########
 # initialize window
 window = tk.Tk()
 window.geometry("400x300")

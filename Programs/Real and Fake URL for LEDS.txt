@@ -1,0 +1,479 @@
+
+
+############## CODE THAT HAS THE RIGHT URL ###############
+############ Function for GPIO colorways ###########
+def overlay_on():
+    body = {
+        "command": "Overlay Model Effect",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": [
+            "LEDs",
+            "Enabled",
+            "WLED - Colorloop",
+            "Horizontal",
+            "128",
+            "128",
+            "128",
+            "Default",
+            "#ff0000",
+            "#0000ff",
+            "#00ff00",
+        ],
+    }
+    url = "http://172.16.1.2/api/command"
+
+    headers = {"Content-Type": "application/json"}
+    requests.post(url, headers=headers, json=body)
+
+def green_first():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-3", "#008000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def yellow_second():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "4-6", "#FFFF00"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def orange_third():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "7-9", "#FFA500"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def dark_orange_fourth():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "10-12", "#d12b08"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def red_fifth():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "13-15", "#FF0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def loading_green():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "WLED - Scan",
+                "Horizontal",
+                "128",
+                "239",
+                "87",
+                "false",
+                "* Colors 1&2",
+                "#04ff00",
+                "#000000",
+                "#000000",
+            ],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def led_pixel(leds, color):
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Fill",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [leds, "Enabled", color],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.post(url, headers=headers, data=payload)
+
+def overlay_off():
+    headers = {"Content-Type": "application/json"}
+    url = "http://172.16.1.2/api/command"
+
+    body = {
+        "command": "Overlay Model State",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": ["LEDs", "Disabled"],
+    }
+    requests.post(url, headers=headers, json=body)
+
+def all_off():
+    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
+
+    payload = json.dumps(["LEDs"])
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def turn_off_single():
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Test Stop",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-15", "#ff0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def static_off():
+    url = "http://172.16.1.2/api/command"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Clear",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["Led1,Led2,Led3,Led4,Led5,LEDs"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def main_off():
+    turn_off_single()
+    all_off()
+    static_off()
+    overlay_off()
+
+def turn_red():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+def turn_green():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+def colorSpaz():
+    main_off()
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+    time.sleep(1)
+    main_off()
+
+# makes sure everything is off before starting
+main_off()
+
+
+############## CODE THAT HAS FAKE URL ####################
+############ Function for GPIO colorways ###########
+def colorSpaz():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+
+def overlay_on():
+    body = {
+        "command": "Overlay Model Effect",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": [
+            "LEDs",
+            "Enabled",
+            "WLED - Colorloop",
+            "Horizontal",
+            "128",
+            "128",
+            "128",
+            "Default",
+            "#ff0000",
+            "#0000ff",
+            "#00ff00",
+        ],
+    }
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    headers = {"Content-Type": "application/json"}
+    requests.post(url, headers=headers, json=body)
+
+def green_first():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-3", "#008000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def yellow_second():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "4-6", "#FFFF00"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def orange_third():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "7-9", "#FFA500"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def dark_orange_fourth():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "10-12", "#d12b08"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def red_fifth():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    payload = json.dumps(
+        {
+            "command": "Test Start",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "13-15", "#FF0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def loading_green():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "WLED - Scan",
+                "Horizontal",
+                "128",
+                "239",
+                "87",
+                "false",
+                "* Colors 1&2",
+                "#04ff00",
+                "#000000",
+                "#000000",
+            ],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def led_pixel(leds, color):
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Fill",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [leds, "Enabled", color],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.post(url, headers=headers, data=payload)
+
+def overlay_off():
+    headers = {"Content-Type": "application/json"}
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    body = {
+        "command": "Overlay Model State",
+        "multisyncCommand": False,
+        "multisyncHosts": "",
+        "args": ["LEDs", "Disabled"],
+    }
+    requests.post(url, headers=headers, json=body)
+
+def all_off():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(["LEDs"])
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def turn_off_single():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    payload = json.dumps(
+        {
+            "command": "Test Stop",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["1000", "RGB Single Color", "1-15", "#ff0000"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def static_off():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Clear",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": ["Led1,Led2,Led3,Led4,Led5,LEDs"],
+        }
+    )
+    headers = {"Content-Type": "application/json"}
+
+    requests.request("POST", url, headers=headers, data=payload)
+
+def main_off():
+    turn_off_single()
+    all_off()
+    static_off()
+    overlay_off()
+
+def turn_red():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+def turn_green():
+    led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
+    time.sleep(0.4)
+    main_off()
+
+# makes sure everything is off before starting
+main_off()
