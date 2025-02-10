@@ -15,6 +15,33 @@ import time
 
 
 ############ Function for GPIO colorways ###########
+def colorSpaz():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -34,14 +61,13 @@ def overlay_on():
             "#00ff00",
         ],
     }
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
-
 def green_first():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -55,9 +81,8 @@ def green_first():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def yellow_second():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -71,9 +96,8 @@ def yellow_second():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def orange_third():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -87,9 +111,8 @@ def orange_third():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def dark_orange_fourth():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -102,9 +125,8 @@ def dark_orange_fourth():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def red_fifth():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -117,9 +139,8 @@ def red_fifth():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def loading_green():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -146,9 +167,8 @@ def loading_green():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def led_pixel(leds, color):
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -162,10 +182,9 @@ def led_pixel(leds, color):
 
     requests.post(url, headers=headers, data=payload)
 
-
 def overlay_off():
     headers = {"Content-Type": "application/json"}
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     body = {
         "command": "Overlay Model State",
@@ -175,18 +194,16 @@ def overlay_off():
     }
     requests.post(url, headers=headers, json=body)
 
-
 def all_off():
-    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(["LEDs"])
     headers = {"Content-Type": "application/json"}
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def turn_off_single():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
         {
             "command": "Test Stop",
@@ -199,9 +216,8 @@ def turn_off_single():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def static_off():
-    url = "http://172.16.1.2/api/command"
+    url = "https://jsonplaceholder.typicode.com/todos/1"
 
     payload = json.dumps(
         {
@@ -215,60 +231,24 @@ def static_off():
 
     requests.request("POST", url, headers=headers, data=payload)
 
-
 def main_off():
     turn_off_single()
     all_off()
     static_off()
     overlay_off()
 
-
 def turn_red():
     led_pixel("Led1,Led2,Led3,Led4,Led5", "#FF0000")  # Red color
     time.sleep(0.4)
     main_off()
-
 
 def turn_green():
     led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
     time.sleep(0.4)
     main_off()
 
-
-def colorSpaz():
-    main_off()
-    url = "http://172.16.1.2/api/command"
-    payload = json.dumps(
-        {
-            "command": "Overlay Model Effect",
-            "multisyncCommand": False,
-            "multisyncHosts": "",
-            "args": [
-                "LEDs",
-                "Enabled",
-                "Bars",
-                "Up",
-                "5000",
-                "4",
-                "3",
-                "5",
-                "#ff0000",
-                "#00ff00",
-                "#0000ff",
-                "#ef0aff",
-                "#ffea00",
-            ],
-        }
-    )
-
-    requests.request("POST", url, data=payload)
-    time.sleep(1)
-    main_off()
-
-
 # makes sure everything is off before starting
 main_off()
-
 
 ############ Login/Registration/Captcha ############
 # hashes a password for better security
@@ -1042,9 +1022,7 @@ class Dashboard:
             self.update_filter_options()
             self.attendance_listbox.delete(0, tk.END)
             if self.status_var.get() == "Present":
-                self.grant_points(1)
-
-            turn_green()
+                turn_green()
         except Exception as e:
             # Debugging: Print exception message
             print(f"Error: {e}")
@@ -1439,7 +1417,6 @@ class Dashboard:
                         "Goal Progress Updated",
                         f"Progress for '{goal_name}' updated to {progress}.",
                     )
-                    self.grant_points(1)
                 else:
                     # Show warning if the progress is invalid (less than current or greater than target)
                     turn_red()
@@ -1447,10 +1424,7 @@ class Dashboard:
                         "Invalid Progress",
                         "Progress cannot be less than the current value or greater than the target.",
                     )
-                if progress == self.goals[goal_name]["target"]:
-                    self.complete_goal()  # This will handle awarding points!
-                else:
-                    pass
+
             else:
                 # Show warning if no progress was entered
                 turn_red()
