@@ -1,4 +1,7 @@
-############ Libraries ############
+
+from tkinter import messagebox
+from tkinter import ttk 
+import os
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import simpledialog
@@ -8,13 +11,11 @@ from tkinter import *
 import csv
 import string
 import hashlib
-import os
 import requests
 import json
 import time
 
-
-############ Function for GPIO colorways ###########
+############# Function for GPIO colorways #############
 def colorSpaz():
     url = "https://jsonplaceholder.typicode.com/todos/1"
     payload = json.dumps(
@@ -250,18 +251,16 @@ def turn_green():
 # makes sure everything is off before starting
 main_off()
 
-############ Login/Registration/Captcha ############
+############# Login/Registration/Captcha #############
 # hashes a password for better security
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # opens the registration frame
 def new_user():
     """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
-
 
 # function that saves data in a CSV file
 # verifies that both the username and password are entered
@@ -289,7 +288,6 @@ def save_data():
 
     else:
         save_result_label.config(text="Please enter a username AND password.")
-
 
 # a fucntion to log in the user, verifies that the user is
 # registered
@@ -332,13 +330,11 @@ def login():
             text="Hmm, it seems like you haven't registered yet! Please register before trying again"
         )
 
-
 # registration frame function
 def show_registration_frame():
     registration_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     captcha_frame.pack_forget()
-
 
 # login frame function
 def show_login_frame():
@@ -346,12 +342,10 @@ def show_login_frame():
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
 
-
 # captcha generation
 def generate_captcha():
     captcha_text = "".join(random.choices(string.ascii_letters + string.digits, k=6))
     captcha_label.config(text=captcha_text)
-
 
 # captcha frame function
 def show_captcha_frame():
@@ -359,7 +353,6 @@ def show_captcha_frame():
     captcha_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     registration_frame.pack_forget()
-
 
 # captcha verification
 def verify_captcha():
@@ -384,20 +377,47 @@ def verify_captcha():
         main_off()
         turn_red()
         generate_captcha()
-
-
-############ Dashboard ############
+############# DASHBOARD CLASS #############
 class Dashboard:
-    def __init__(self, root, username):
+    def __init__(self, root,username):
         self.root = root
         self.username = username
+        # set folder for files to go to under the users username
         self.folder_path = f"my_{username}_folder"
         os.makedirs(self.folder_path, exist_ok=True)
-        self.folder_path = f"my_{username}_folder"
-        self.attendance_file = os.path.join(self.folder_path, "attendance.csv")
+        # points for badges
         self.points = self.load_user_points()
         self.root.title("Academic Progress Tracker")
         self.make_fullscreen()
+
+        # Create notebook (tabs container)
+        self.notebook = ttk.Notebook(root)
+
+        # Creates and arranges the widgets (UI elements) in the window
+        self.notebook_label = tk.Label(self.root, text="Academic Progress Tracker", font=("Helvetica", 18, "bold"))
+        self.notebook_label.grid(row = 0, column= 0, columnspan = 3, pady = 20, sticky = "nsew")
+        self.notebook.grid(row = 1, column = 1)
+
+        # Create frames for each tab
+        self.task_frame = ttk.Frame(self.notebook)
+        self.goal_frame = ttk.Frame(self.notebook)
+        self.schedule_frame = ttk.Frame(self.notebook)
+        self.attendance_frame = ttk.Frame(self.notebook)
+        self.course_frame = ttk.Frame(self.notebook)
+
+        # Add frames as tabs
+        self.notebook.add(self.task_frame, text="Tasks")
+        self.notebook.add(self.goal_frame, text="Goals")
+        self.notebook.add(self.schedule_frame, text="Schedule")
+        self.notebook.add(self.attendance_frame, text="Attendance")
+        self.notebook.add(self.course_frame, text="Recommended Courses")
+
+        # variables
+        self.course_name_var = tk.StringVar()
+        self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
+        self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
+        self.status_var = tk.StringVar(value="Present")
+        self.course_filter_var = tk.StringVar()
 
         # Initialize lists and dictionaries for tasks, classes, grades, and goals
         self.tasks = []
@@ -411,30 +431,19 @@ class Dashboard:
         self.original_theme = self.theme_list[self.current_theme_index]
         self.font = ("Arial", 12)
 
-        # variables
-        self.course_name_var = tk.StringVar()
-        self.date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
-        self.time_var = tk.StringVar(value=datetime.now().strftime("%H:%M"))
-        self.status_var = tk.StringVar(value="Present")
-        self.course_filter_var = tk.StringVar()
+        # Initialize components for each tab
+        self.create_task_tab()
+        self.create_goal_tab()
+        self.create_schedule_tab()
+        self.create_attendance_tab()
+        self.create_course_tab()
 
-        self.my_widgets()  # Setup the GUI components
-        self.update_filter_options()
-
-        self.load_tasks_csv()  # Load tasks from CSV
-        self.update_task_list()  # Update the task list in the UI
-        self.load_schedule_csv()  # Load schedule from CSV
-        self.update_schedule_list()  # Update the schedule list in the UI
-        self.load_classes_csv()
-        self.load_goals_csv()  # Load goals from CSV
-        self.update_goal_listbox()  # Update the goal list in the UI
 
     def make_fullscreen(self):
         # Makes the app window fullscreen
         self.root.attributes("-fullscreen", True)
         self.root.bind(
-            "<Escape>", self.toggle_fullscreen
-        )  # Press Escape to exit fullscreen
+            "<Escape>", self.toggle_fullscreen)  # Press Escape to exit fullscreen
 
     def toggle_fullscreen(self, event=None):
         # Toggles between fullscreen and windowed mode
@@ -461,227 +470,139 @@ class Dashboard:
 
     def decide_theme(self):
         # Applies the current theme to all components
-        self.root.config(bg=self.original_theme["bg"])
-
+        self.notebook.config(bg=self.original_theme["bg"])
         # Update labels' background and foreground colors
-        self.header_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+        self.notebook_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.task_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.due_date_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.task_listbox_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.schedule_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.class_name_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.grade_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.schedule_listbox_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.attendance_listbox.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.course_name_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.date.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.time.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.attendance.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.filter.config(bg=self.original_theme["bg"], fg=self.original_theme["fg"])
-
         self.goal_target_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.goal_name_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
-
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
+        
         # Update entry fields' background and foreground colors
         self.task_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.due_date_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.class_name_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.schedule_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.grade_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.course_name_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.date_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.time_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.goal_target_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.goal_name_entry.config(
-            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
-        )
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
 
         # Update listboxes' background and foreground colors
         self.task_listbox.config(
-            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
-        )
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         self.schedule_listbox.config(
-            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
-        )
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         self.attendance_listbox.config(
-            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
-        )
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         self.goal_listbox.config(
-            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
-        )
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
+        
         # Update buttons' background and foreground colors
         self.add_task_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.complete_task_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.schedule_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
-        self.update_class_grade_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.add_goal_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.update_progress_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.sumbit_attendance_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.filter_attendance_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
+        
         # Update Goal Progress Bar background color
         self.goal_progress_bar.config(bg=self.original_theme["listbox_bg"])
 
         # Update Goal Progress label's background and foreground colors
         self.goal_progress_label.config(
-            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
-        )
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"])
 
         # Update OptionMenu background and foreground colors
         self.present_or_absent.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.course_filter_menu.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
 
-    def my_widgets(self):
-        # Creates and arranges the widgets (UI elements) in the window
-        self.header_label = tk.Label(
-            self.root, text="Academic Progress Tracker", font=("Helvetica", 18, "bold")
-        )
-        self.header_label.grid(row=0, column=0, columnspan=3, pady=20, sticky="nsew")
-
+    def create_task_tab(self):
+        """Set up the Task Tab."""
+        ttk.Label(self.task_frame, text="Task Manager", font=("Arial", 16))
         self.theme_button = tk.Button(
-            self.root,
+            self.task_frame,
             text="Switch to Dark Theme",
             command=self.toggle_theme,
             font=("Helvetica", 12),
             relief="solid",
             width=20,
-            height=2,
-        )
-        self.theme_button.grid(row=1, column=0, padx=10, pady=10)
-
+            height=2,)
+        self.theme_button.grid(row = 1, column = 0, padx = 10, pady = 10)
         # Task input section
-        self.task_label = tk.Label(self.root, text="Task:", font=self.font)
-        self.task_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        self.task_label = tk.Label(self.task_frame, text = "Task:", font = self.font)
+        self.task_label.grid(row = 2, column = 0, padx = 10, pady = 10, sticky = "w")
 
         self.task_entry = tk.Entry(
-            self.root,
+            self.task_frame,
             font=self.font,
             width=30,
             bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.task_entry.grid(row=2, column=1, padx=10, pady=10)
-
+            fg=self.original_theme["entry_fg"],)
+        self.task_entry.grid(row = 2, column = 1, padx = 10, pady = 10)
+ 
         # Due date input section
         self.due_date_label = tk.Label(
-            self.root, text="Due Date (YYYY-MM-DD):", font=self.font
-        )
-        self.due_date_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+            self.task_frame, text="Due Date (YYYY-MM-DD):", font=self.font)
+        self.due_date_label.grid(row = 3, column = 0, padx = 10, pady = 10, sticky = "w")
 
         self.due_date_entry = tk.Entry(
-            self.root,
+            self.task_frame,
             font=self.font,
             width=30,
             bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
+            fg=self.original_theme["entry_fg"],)
         self.due_date_entry.grid(row=3, column=1, padx=10, pady=10)
-
-        # Schedule and Class inputs
-        self.class_name_label = tk.Label(self.root, text="Class Name:", font=self.font)
-        self.class_name_label.grid(row=1, column=2, padx=10, pady=10, sticky="w")
-
-        self.class_name_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            width=30,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
-
-        self.schedule_label = tk.Label(
-            self.root, text="Schedule (e.g., Mon 9-11 AM):", font=self.font
-        )
-        self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
-
-        self.schedule_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            width=30,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)
-
-        self.grade_label = tk.Label(self.root, text="Grade:", font=self.font)
-        self.grade_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
-
-        self.grade_entry = tk.Entry(
-            self.root,
-            font=self.font,
-            width=30,
-            bg=self.original_theme["entry_bg"],
-            fg=self.original_theme["entry_fg"],
-        )
-        self.grade_entry.grid(row=3, column=3, padx=10, pady=10)
 
         # Button to add task
         self.add_task_button = tk.Button(
-            self.root,
+            self.task_frame,
             text="Add Task",
             font=self.font,
             command=self.create_task,
@@ -689,13 +610,12 @@ class Dashboard:
             fg=self.original_theme["button_fg"],
             relief="solid",
             width=10,
-            height=2,
-        )
-        self.add_task_button.grid(row=4, column=0, columnspan=1, pady=10)
+            height=2,)
+        self.add_task_button.grid(row = 4, column=0, columnspan=1, pady=10)
 
         # Button to update task for completion
         self.complete_task_button = tk.Button(
-            self.root,
+            self.task_frame,
             text="Update Task",
             font=self.font,
             command=self.complete_task,
@@ -706,15 +626,44 @@ class Dashboard:
             height=2,
         )
         self.complete_task_button.grid(row=4, column=1, columnspan=1, pady=10)
+                # Task list display section
+        self.task_listbox_label = tk.Label(
+            self.task_frame, text="Your Tasks:", font=self.font
+        )
+        self.task_listbox_label.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+
+        self.task_listbox = tk.Listbox(
+            self.task_frame,
+            width=50,
+            height=10,
+            font=self.font,
+            bg=self.original_theme["listbox_bg"],
+            fg=self.original_theme["listbox_fg"],
+        )
+        self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
+
+    def create_goal_tab(self):
+        """Set up the Goals Tab."""
+        ttk.Label(self.goal_frame, text="Goal Tracker", font=("Arial", 16))
+        self.theme_button = tk.Button(
+            self.goal_frame,
+            text="Switch to Dark Theme",
+            command=self.toggle_theme,
+            font=("Helvetica", 12),
+            relief="solid",
+            width=20,
+            height=2,
+        )
+        self.theme_button.grid(row=1, column=0, padx=10, pady=10)
 
         # Goal input section
         self.goal_target_label = tk.Label(
-            self.root, text="Goal Target:", font=self.font
+            self.goal_frame, text="Goal Target:", font=self.font
         )
         self.goal_target_label.grid(row=7, column=0, padx=10, pady=10, sticky="w")
 
         self.goal_target_entry = tk.Entry(
-            self.root,
+            self.goal_frame,
             font=self.font,
             width=30,
             bg=self.original_theme["entry_bg"],
@@ -722,11 +671,11 @@ class Dashboard:
         )
         self.goal_target_entry.grid(row=7, column=1, padx=10, pady=10)
 
-        self.goal_name_label = tk.Label(self.root, text="Goal Name:", font=self.font)
+        self.goal_name_label = tk.Label(self.goal_frame, text="Goal Name:", font=self.font)
         self.goal_name_label.grid(row=9, column=0, padx=10, pady=10, sticky="w")
 
         self.goal_name_entry = tk.Entry(
-            self.root,
+            self.goal_frame,
             font=self.font,
             width=30,
             bg=self.original_theme["entry_bg"],
@@ -736,7 +685,7 @@ class Dashboard:
 
         # Button to add the goal
         self.add_goal_button = tk.Button(
-            self.root,
+            self.goal_frame,
             text="Add Goal",
             font=self.font,
             command=self.add_goal,
@@ -747,39 +696,104 @@ class Dashboard:
 
         # Goal progress bar
         self.goal_progress_label = tk.Label(
-            self.root, text="Goal Progress:", font=self.font
+            self.goal_frame, text="Goal Progress:", font=self.font
         )
         self.goal_progress_label.grid(row=8, column=0, padx=10, pady=10, sticky="w")
 
         self.goal_progress_bar = tk.Canvas(
-            self.root, width=200, height=30, bg=self.original_theme["listbox_bg"]
+            self.goal_frame, width=200, height=30, bg=self.original_theme["listbox_bg"]
         )
         self.goal_progress_bar.grid(row=8, column=1, padx=10, pady=10)
 
-        # Task list display section
-        self.task_listbox_label = tk.Label(
-            self.root, text="Your Tasks:", font=self.font
+        # Goal progress bar
+        self.goal_progress_label = tk.Label(
+            self.goal_frame, text="Goal Progress:", font=self.font
         )
-        self.task_listbox_label.grid(row=5, column=0, padx=10, pady=10, sticky="w")
+        self.goal_progress_label.grid(row=8, column=0, padx=10, pady=10, sticky="w")
 
-        self.task_listbox = tk.Listbox(
-            self.root,
-            width=50,
-            height=10,
-            font=self.font,
-            bg=self.original_theme["listbox_bg"],
-            fg=self.original_theme["listbox_fg"],
+        self.goal_progress_bar = tk.Canvas(
+            self.goal_frame, width=200, height=30, bg=self.original_theme["listbox_bg"]
         )
-        self.task_listbox.grid(row=6, column=0, columnspan=2, padx=20, pady=20)
+        self.goal_progress_bar.grid(row=8, column=1, padx=10, pady=10)
+
+        # Button to update goal progress
+        self.update_progress_button = tk.Button(
+            self.goal_frame,
+            text="Update Goal Progress",
+            font=self.font,
+            command=self.update_goal_progress,
+            bg=self.original_theme["button_bg"],
+            fg=self.original_theme["button_fg"],
+            relief="solid",
+        )
+        self.update_progress_button.grid(
+            row=7, column=2, columnspan=2, padx=20, pady=10
+        )
+        # Goal Progress Listbox
+        self.goal_listbox = tk.Listbox(self.goal_frame, height=10, width=50)
+        self.goal_listbox.grid(row=8, column=2, columnspan=2)
+
+    def create_schedule_tab(self):
+        """Set up the Schedule Tab."""
+        ttk.Label(self.schedule_frame, text="Class Schedule", font=("Arial", 16))
+        self.theme_button = tk.Button(
+            self.schedule_frame,
+            text="Switch to Dark Theme",
+            command=self.toggle_theme,
+            font=("Helvetica", 12),
+            relief="solid",
+            width=20,
+            height=2,
+        )
+        self.theme_button.grid(row=1, column=0, padx=10, pady=10)
+                # Schedule and Class inputs
+        self.class_name_label = tk.Label(self.schedule_frame, text="Class Name:", font=self.font)
+        self.class_name_label.grid(row=1, column=2, padx=10, pady=10, sticky="w")
+
+        self.class_name_entry = tk.Entry(
+            self.schedule_frame,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.class_name_entry.grid(row=1, column=3, padx=10, pady=10)
+
+        self.schedule_label = tk.Label(
+            self.schedule_frame, text="Schedule (e.g., Mon 9-11 AM):", font=self.font
+        )
+        self.schedule_label.grid(row=2, column=2, padx=10, pady=10, sticky="w")
+
+        self.schedule_entry = tk.Entry(
+            self.schedule_frame,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.schedule_entry.grid(row=2, column=3, padx=10, pady=10)
+
+        self.grade_label = tk.Label(self.schedule_frame, text="Grade:", font=self.font)
+        self.grade_label.grid(row=3, column=2, padx=10, pady=10, sticky="w")
+
+        self.grade_entry = tk.Entry(
+            self.schedule_frame,
+            font=self.font,
+            width=30,
+            bg=self.original_theme["entry_bg"],
+            fg=self.original_theme["entry_fg"],
+        )
+        self.grade_entry.grid(row=3, column=3, padx=10, pady=10)
+
 
         # Schedule list display section (on the right side)
         self.schedule_listbox_label = tk.Label(
-            self.root, text="Your Schedule:", font=self.font
+            self.schedule_frame, text="Your Schedule:", font=self.font
         )
         self.schedule_listbox_label.grid(row=5, column=2, padx=10, pady=10, sticky="w")
 
         self.schedule_listbox = tk.Listbox(
-            self.root,
+            self.schedule_frame,
             width=50,
             height=10,
             font=self.font,
@@ -787,14 +801,9 @@ class Dashboard:
             fg=self.original_theme["listbox_fg"],
         )
         self.schedule_listbox.grid(row=6, column=2, columnspan=2, padx=20, pady=20)
-
-        self.goal_target_label = tk.Label(
-            self.root, text="Goal Target:", font=self.font
-        )
-        self.goal_target_label.grid(row=7, column=0, padx=10, pady=10, sticky="w")
         # Button to add class schedules
         self.schedule_button = tk.Button(
-            self.root,
+            self.schedule_frame,
             text="Add Class Schedule",
             font=self.font,
             command=self.add_schedule,
@@ -806,50 +815,24 @@ class Dashboard:
         )
         self.schedule_button.grid(row=4, column=2, pady=10)
 
-        # Button to update grade
-        self.update_class_grade_button = tk.Button(
-            self.root,
-            text="Update Grade",
-            font=self.font,
-            command=self.update_class_grade,
-            bg=self.original_theme["button_bg"],
-            fg=self.original_theme["button_fg"],
+    def create_attendance_tab(self):
+        """Set up the Attendance Tab."""
+        ttk.Label(self.attendance_frame, text="Attendance Tracker", font=("Arial", 16))
+        self.theme_button = tk.Button(
+            self.attendance_frame,
+            text="Switch to Dark Theme",
+            command=self.toggle_theme,
+            font=("Helvetica", 12),
             relief="solid",
             width=20,
             height=2,
         )
-        self.update_class_grade_button.grid(row=4, column=3, pady=10)
-
-        # Goal progress bar
-        self.goal_progress_label = tk.Label(
-            self.root, text="Goal Progress:", font=self.font
-        )
-        self.goal_progress_label.grid(row=8, column=0, padx=10, pady=10, sticky="w")
-
-        self.goal_progress_bar = tk.Canvas(
-            self.root, width=200, height=30, bg=self.original_theme["listbox_bg"]
-        )
-        self.goal_progress_bar.grid(row=8, column=1, padx=10, pady=10)
-
-        # Button to update goal progress
-        self.update_progress_button = tk.Button(
-            self.root,
-            text="Update Goal Progress",
-            font=self.font,
-            command=self.update_goal_progress,
-            bg=self.original_theme["button_bg"],
-            fg=self.original_theme["button_fg"],
-            relief="solid",
-        )
-        self.update_progress_button.grid(
-            row=7, column=2, columnspan=2, padx=20, pady=10
-        )
-
+        self.theme_button.grid(row=1, column=0, padx=10, pady=10)
         # Course Name
-        self.course_name_label = tk.Label(self.root, text="Course Name:")
+        self.course_name_label = tk.Label(self.attendance_frame, text="Course Name:")
         self.course_name_label.grid(row=1, column=4)
         self.course_name_entry = tk.Entry(
-            self.root,
+            self.attendance_frame,
             textvariable=self.course_name_var,
             font=self.font,
             width=15,
@@ -859,50 +842,93 @@ class Dashboard:
         self.course_name_entry.grid(row=1, column=5)
 
         # Date
-        self.date = tk.Label(self.root, text="Date (YYYY-MM-DD):")
+        self.date = tk.Label(self.attendance_frame, text="Date (YYYY-MM-DD):")
         self.date.grid(row=2, column=4)
-        self.date_entry = tk.Entry(self.root, textvariable=self.date_var)
+        self.date_entry = tk.Entry(self.attendance_frame, textvariable=self.date_var)
         self.date_entry.grid(row=2, column=5)
 
         # Time
-        self.time = tk.Label(self.root, text="Time (HH:MM):")
+        self.time = tk.Label(self.attendance_frame, text="Time (HH:MM):")
         self.time.grid(row=3, column=4)
-        self.time_entry = tk.Entry(self.root, textvariable=self.time_var)
+        self.time_entry = tk.Entry(self.attendance_frame, textvariable=self.time_var)
         self.time_entry.grid(row=3, column=5)
 
         # Attendance Status
-        self.attendance = tk.Label(self.root, text="Attendance (Present/Absent):")
+        self.attendance = tk.Label(self.attendance_frame, text="Attendance (Present/Absent):")
         self.attendance.grid(row=4, column=4)
         self.present_or_absent = tk.OptionMenu(
-            self.root, self.status_var, "Present", "Absent"
+            self.attendance_frame, self.status_var, "Present", "Absent"
         )
         self.present_or_absent.grid(row=4, column=5)
 
         # Submit Button
         self.sumbit_attendance_button = tk.Button(
-            self.root, text="Submit Attendance", command=self.submit_attendance
+            self.attendance_frame, text="Submit Attendance", command=self.submit_attendance
         )
 
         self.sumbit_attendance_button.grid(row=5, column=4, columnspan=2)
 
         # Attendance Listbox
-        self.attendance_listbox = tk.Listbox(self.root, height=10, width=50)
+        self.attendance_listbox = tk.Listbox(self.attendance_frame, height=10, width=50)
         self.attendance_listbox.grid(row=6, column=4, columnspan=2)
 
         # Course Filter
-        self.filter = tk.Label(self.root, text="Filter by Course:")
+        self.filter = tk.Label(self.attendance_frame, text="Filter by Course:")
         self.filter.grid(row=7, column=4)
-        self.course_filter_menu = tk.OptionMenu(self.root, self.course_filter_var, [])
+        self.course_filter_menu = tk.OptionMenu(self.attendance_frame, self.course_filter_var, [])
         self.course_filter_menu.grid(row=7, column=5)
 
         # Filter Button
         self.filter_attendance_button = tk.Button(
-            self.root, text="Filter Attendance", command=self.filter_by_course
+            self.attendance_frame, text="Filter Attendance", command=self.filter_by_course
         )
         self.filter_attendance_button.grid(row=8, column=4, columnspan=2)
-        # Goal Progress Listbox
-        self.goal_listbox = tk.Listbox(self.root, height=10, width=50)
-        self.goal_listbox.grid(row=8, column=2, columnspan=2)
+
+
+    def create_course_tab(self):
+        """Set up the Recommended Courses Tab."""
+        # title
+        ttk.Label(self.course_frame, text="Course Recommendations", font=("Arial", 16)).grid(
+            row=0, column=0, columnspan=3, pady=10)
+        # theme button
+        self.theme_button = tk.Button(
+            self.course_frame,
+            text="Switch to Dark Theme",
+            command=self.toggle_theme,
+            font=("Helvetica", 12),
+            relief="solid",
+            width=20,
+            height=2,)
+        self.theme_button.grid(row=1, column=0, padx=10, pady=10)
+        # course prefix
+        ttk.Label(self.course_frame, text="Enter Course Prefix (comma separated):").grid(
+            row=2, column=0, padx=10, pady=5, sticky="w")
+        self.prefix_entry = ttk.Entry(self.course_frame, width=50)
+        self.prefix_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        # course number
+        ttk.Label(self.course_frame, text="Enter Course Number (comma separated):").grid(
+            row=3, column=0, padx=10, pady=5, sticky="w")
+        self.course_num_entry = ttk.Entry(self.course_frame, width=50)
+        self.course_num_entry.grid(row=3, column=1, padx=10, pady=5)
+
+        # course taken
+        ttk.Label(self.course_frame, text="Enter Courses Taken (comma separated):").grid(
+            row=4, column=0, padx=10, pady=5, sticky="w")
+        self.taken_entry = ttk.Entry(self.course_frame, width=50)
+        self.taken_entry.grid(row=4, column=1, padx=10, pady=5)
+
+        # recommendation button
+        self.get_recommendations_button = ttk.Button(
+            self.course_frame, text="Get Recommendations", command=self.get_recommendations)
+        self.get_recommendations_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+        # recommended course label and listbox
+        ttk.Label(self.course_frame, text="Recommended Courses:").grid(
+            row=6, column=0, padx=10, pady=5, sticky="w")
+        self.recommendations_listbox = tk.Listbox(self.course_frame, height=10, width=60)
+        self.recommendations_listbox.grid(row=7, column=0, columnspan=2, padx=10, pady=5)
+
 
     ####### BADGES AND POINTS #############
     def load_user_points(self):
@@ -964,9 +990,9 @@ class Dashboard:
     def show_badge_popup(self):
         """Display a popup when a badge is earned."""
         badge_level = self.points // 3
-        messagebox.showinfo(
-            "🎖 Badge Earned!",
-            f"Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!"
+        print(f"🎖 Badge Earned: Level {badge_level}")  # Debugging
+        messagebox.showinfo("BADGE EARNED",
+            f"🎖 Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!🎖 "
         )
 
     def completed_task(self):
@@ -1146,10 +1172,6 @@ class Dashboard:
                 self.update_task_list()
                 self.completed_task()
                 colorSpaz()
-                messagebox.showinfo(
-                    "Task Completed",
-                    f"Task '{task_name}' has been completed and removed.",
-                )
             else:
                 turn_red()
                 messagebox.showinfo(
@@ -1572,21 +1594,23 @@ class Dashboard:
         messagebox.showinfo("Success", "Courses added successfully!")
 
     def get_recommendations(self):
-        """Displays recommended courses."""
+        """Displays recommended courses in the Listbox."""
+        
+        # Clear previous results
+        self.recommendations_listbox.delete(0, tk.END)
+
         taken_courses = self.taken_entry.get().upper().split(',')
         taken_courses = [course.strip() for course in taken_courses]
-        
+
         recommended = self.recommend_courses(taken_courses)
-        
-        self.result_text.delete("1.0", tk.END)
+
         if recommended:
-            self.result_text.insert(tk.END, "Recommended courses:\n" + "\n".join(recommended))
+            for course in recommended:
+                self.recommendations_listbox.insert(tk.END, course)
         else:
-            self.result_text.insert(tk.END, "You have taken all available courses!")
+            self.recommendations_listbox.insert(tk.END, "You have taken all available courses!")
 
-
-
-######## SETUP ##########
+#############  SETUP #############
 # initialize window
 window = tk.Tk()
 window.geometry("400x300")
@@ -1650,7 +1674,6 @@ username_entry_save.grid(row=0, column=1)
 password_entry_save.grid(row=1, column=1)
 captcha_entry.grid(row=1, column=0, columnspan=2)
 
-# Themes
 LIGHT_THEME = {
     "bg": "#ffffff",
     "fg": "#000000",
@@ -1696,8 +1719,7 @@ PURPLE_THEME = {
     "listbox_fg": "#ffffff",
 }
 
-############ MAIN ############
+# Run Application
 show_login_frame()
 loading_green()
 window.mainloop()
-root = tk.Tk()

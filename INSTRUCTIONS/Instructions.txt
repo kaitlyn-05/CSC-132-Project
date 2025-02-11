@@ -23,3 +23,4 @@ ALL
 ####################################################
 breadboard, lights, buttons, circutry = NOT DONE
 
+scheudle attendance task goal course rec
