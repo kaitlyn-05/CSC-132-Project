@@ -15,34 +15,7 @@ import requests
 import json
 import time
 
-############# Function for GPIO colorways #############
-def colorSpaz():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
-    payload = json.dumps(
-        {
-            "command": "Overlay Model Effect",
-            "multisyncCommand": False,
-            "multisyncHosts": "",
-            "args": [
-                "LEDs",
-                "Enabled",
-                "Bars",
-                "Up",
-                "5000",
-                "4",
-                "3",
-                "5",
-                "#ff0000",
-                "#00ff00",
-                "#0000ff",
-                "#ef0aff",
-                "#ffea00",
-            ],
-        }
-    )
-
-    requests.request("POST", url, data=payload)
-
+############ Function for GPIO colorways ###########
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -62,13 +35,13 @@ def overlay_on():
             "#00ff00",
         ],
     }
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
 def green_first():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -83,7 +56,7 @@ def green_first():
     requests.request("POST", url, headers=headers, data=payload)
 
 def yellow_second():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -98,7 +71,7 @@ def yellow_second():
     requests.request("POST", url, headers=headers, data=payload)
 
 def orange_third():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -113,7 +86,7 @@ def orange_third():
     requests.request("POST", url, headers=headers, data=payload)
 
 def dark_orange_fourth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -127,7 +100,7 @@ def dark_orange_fourth():
     requests.request("POST", url, headers=headers, data=payload)
 
 def red_fifth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -141,7 +114,7 @@ def red_fifth():
     requests.request("POST", url, headers=headers, data=payload)
 
 def loading_green():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -169,7 +142,7 @@ def loading_green():
     requests.request("POST", url, headers=headers, data=payload)
 
 def led_pixel(leds, color):
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -185,7 +158,7 @@ def led_pixel(leds, color):
 
 def overlay_off():
     headers = {"Content-Type": "application/json"}
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     body = {
         "command": "Overlay Model State",
@@ -196,7 +169,7 @@ def overlay_off():
     requests.post(url, headers=headers, json=body)
 
 def all_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
 
     payload = json.dumps(["LEDs"])
     headers = {"Content-Type": "application/json"}
@@ -204,7 +177,7 @@ def all_off():
     requests.request("POST", url, headers=headers, data=payload)
 
 def turn_off_single():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Stop",
@@ -218,7 +191,7 @@ def turn_off_single():
     requests.request("POST", url, headers=headers, data=payload)
 
 def static_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -246,6 +219,36 @@ def turn_red():
 def turn_green():
     led_pixel("Led1,Led2,Led3,Led4,Led5", "#00ff00")  # Red color
     time.sleep(0.4)
+    main_off()
+
+def colorSpaz():
+    main_off()
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+    time.sleep(1)
     main_off()
 
 # makes sure everything is off before starting
@@ -991,12 +994,14 @@ class Dashboard:
         """Display a popup when a badge is earned."""
         badge_level = self.points // 3
         print(f"🎖 Badge Earned: Level {badge_level}")  # Debugging
-        messagebox.showinfo("BADGE EARNED",
+        colorSpaz()
+        messagebox.showinfo("BADGE EARNED"
             f"🎖 Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!🎖 "
         )
 
     def completed_task(self):
         """Mark task as complete and award points."""
+        colorSpaz()
         messagebox.showinfo("Task Completed", "You've completed a task!")
         self.update_points(3)  
 
@@ -1148,7 +1153,7 @@ class Dashboard:
             self.handle_missing_input(
                 "Input Error", "Please enter both task and due date."
             )
-            turn_red()
+            
 
     def complete_task(self):
         selected_task = self.task_listbox.curselection()
@@ -1171,7 +1176,11 @@ class Dashboard:
                 self.save_tasks_csv()
                 self.update_task_list()
                 self.completed_task()
-                colorSpaz()
+            
+                messagebox.showinfo(
+                    "Task Completed",
+                    f"Task '{task_name}' has been completed and removed.",
+                )
             else:
                 turn_red()
                 messagebox.showinfo(
@@ -1400,68 +1409,65 @@ class Dashboard:
             )
 
     def update_goal_progress(self):
-        # Get the selected goal from the listbox
-        selected_goal = self.goal_listbox.curselection()
-
-        if selected_goal:
-            goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
-
-            # Show a pop-up dialog to ask for the progress value
-            progress = simpledialog.askinteger(
-                "Update Goal Progress",  # Title of the dialog
-                f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
-                parent=self.root,
-                minvalue=0,  # Minimum allowed progress
-                maxvalue=self.goals[goal_name][
-                    "target"
-                ],  # Maximum allowed progress (cannot exceed target)
-            )
-
-            if progress is not None:  # If user entered a valid value (not canceled)
-                # Check if the progress is valid
-                if (
-                    progress >= self.goals[goal_name]["progress"]
-                    and progress <= self.goals[goal_name]["target"]
-                ):
-                    # Update the goal's progress
-                    self.goals[goal_name]["progress"] = progress
-
-                    # Save the updated goals to the CSV file
-                    self.save_goals_csv()
-
-                    # Update the goal listbox and progress bar
-                    self.update_goal_listbox()
-                    self.update_goal_progress_bar(goal_name)
-
-                    # Show a success message
-                    turn_green()
-                    messagebox.showinfo(
-                        "Goal Progress Updated",
-                        f"Progress for '{goal_name}' updated to {progress}.",
-                    )
+            # Get the selected goal from the listbox
+            selected_goal = self.goal_listbox.curselection()
+            
+            if selected_goal:
+                goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
+                
+                # Show a pop-up dialog to ask for the progress value
+                progress = simpledialog.askinteger(
+                    "Update Goal Progress",  # Title of the dialog
+                    f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
+                    parent=self.root,
+                    minvalue=0,  # Minimum allowed progress
+                    maxvalue=self.goals[goal_name]["target"],  # Maximum allowed progress (cannot exceed target)
+                )
+                
+                if progress is not None:  # If user entered a valid value (not canceled)
+                    # Check if the progress is valid
+                    if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
+                        # Update the goal's progress
+                        self.goals[goal_name]["progress"] = progress
+                        
+                        # Save the updated goals to the CSV file
+                        self.save_goals_csv()
+                        
+                        # Update the goal listbox and progress bar
+                        self.update_goal_listbox()
+                        self.update_goal_progress_bar(goal_name)
+                        
+                        # Check if the goal is completed
+                        if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
+                            # Display the completion message
+                            colorSpaz()
+                            messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
+                            
+                            # Remove the goal from the goals dictionary
+                            del self.goals[goal_name]
+                            
+                            # Remove the goal from the listbox
+                            self.update_goal_listbox()
+                        # This saves the updated CSV file without the removed goal
+                        self.save_goals_csv()
+                    else:
+                        turn_red()
+                        # Show warning if the progress is invalid (less than current or greater than target)
+                        messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
                 else:
-                    # Show warning if the progress is invalid (less than current or greater than target)
                     turn_red()
-                    messagebox.showwarning(
-                        "Invalid Progress",
-                        "Progress cannot be less than the current value or greater than the target.",
-                    )
-
+                    # Show warning if no progress was entered
+                    messagebox.showwarning("Missing Progress", "No progress entered.")
             else:
-                # Show warning if no progress was entered
                 turn_red()
-                messagebox.showwarning("Missing Progress", "No progress entered.")
-        else:
-            turn_red()
-            # Show warning if no goal is selected
-            messagebox.showwarning(
-                "Goal Not Selected", "Please select a goal from the list."
-            )
+                # Show warning if no goal is selected
+                messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
+
 
     def update_goal_listbox(self):
         # Clear current listbox items
         self.goal_listbox.delete(0, tk.END)
-
+        
         # Insert each goal into the listbox
         for goal_name, goal in self.goals.items():
             self.goal_listbox.insert(
@@ -1469,9 +1475,8 @@ class Dashboard:
             )
 
     def save_goals_csv(self):
-        file_path = os.path.join(self.folder_path, "goals.csv")
         try:
-            with open(file_path, mode="w", newline="") as file:
+            with open("goals.csv", mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for goal_name, goal in self.goals.items():
                     writer.writerow([goal_name, goal["target"], goal["progress"]])
@@ -1487,25 +1492,126 @@ class Dashboard:
                     target = int(row[1])
                     progress = int(row[2])
                     self.goals[goal_name] = {"target": target, "progress": progress}
+
             self.update_goal_listbox()  # Update listbox after loading goals
+            turn_green()
         except FileNotFoundError:
             print("No saved goals found.")
+
+    def update_goal_progress(self):
+        # Get the selected goal from the listbox
+        selected_goal = self.goal_listbox.curselection()
+
+        if selected_goal:
+            goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
+
+            # Show a pop-up dialog to ask for the progress value
+            progress = simpledialog.askinteger(
+                "Update Goal Progress",  # Title of the dialog
+                f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
+                parent=self.root,
+                minvalue=0,  # Minimum allowed progress
+                maxvalue=self.goals[goal_name]["target"],  # Maximum allowed progress (cannot exceed target)
+            )
+
+            if progress is not None:  # If user entered a valid value (not canceled)
+                # Check if the progress is valid
+                if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
+                    # Update the goal's progress
+                    self.goals[goal_name]["progress"] = progress
+
+                    # Save the updated goals to the CSV file
+                    self.save_goals_csv()
+
+                    # Update the goal listbox and progress bar
+                    self.update_goal_listbox()
+                    self.update_goal_progress_bar(goal_name)
+
+                    # Check if the goal is completed
+                    if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
+                        # Display the completion message
+                        messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
+
+                        # Remove the goal from the goals dictionary
+                        del self.goals[goal_name]
+
+                        # Remove the goal from the listbox
+                        self.update_goal_listbox()
+                        
+                        # Ensure the CSV is updated (rewritten without the removed goal)
+                        self.save_goals_csv()
+
+                else:
+                    # Show warning if the progress is invalid (less than current or greater than target)
+                    messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
+            else:
+                # Show warning if no progress was entered
+                messagebox.showwarning("Missing Progress", "No progress entered.")
+        else:
+            # Show warning if no goal is selected
+            messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
+
+
+    def update_goal_listbox(self):
+        # Clear current listbox items
+        self.goal_listbox.delete(0, tk.END)
+
+        # Insert each goal into the listbox
+        for goal_name, goal in self.goals.items():
+            self.goal_listbox.insert(
+                tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}"
+            )
+
+
+    def save_goals_csv(self):
+        try:
+            # Open the CSV file in write mode, clearing its content first
+            with open("goals.csv", mode="w", newline="") as file:
+                writer = csv.writer(file)
+                # Write each goal into the CSV file (after any removal of completed goals)
+                for goal_name, goal in self.goals.items():
+                    writer.writerow([goal_name, goal["target"], goal["progress"]])
+        except Exception as e:
+            print(f"Error saving goals: {e}")
+
+
+
+    def load_goals_csv(self):
+        try:
+            # Open the CSV file to load saved goals
+            with open("goals.csv", mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    goal_name = row[0]
+                    target = int(row[1])
+                    progress = int(row[2])
+                    self.goals[goal_name] = {"target": target, "progress": progress}
+            
+            # After loading, update the listbox to reflect the loaded goals
+            self.update_goal_listbox()
+        except FileNotFoundError:
+            print("No saved goals found.")
+
 
     def update_goal_progress_bar(self, selected_goal_name=None):
         # Clear the progress bar before updating
         self.goal_progress_bar.delete("all")
-
-        # Update the progress bar based on the selected goal
-        if (
-            selected_goal_name is None
-        ):  # If no goal is selected, update based on the first goal
+        
+        if selected_goal_name is None:  # If no goal is selected, update based on the first goal
             selected_goal_name = list(self.goals.keys())[0]
 
         goal = self.goals[selected_goal_name]
-        progress_percentage = goal["progress"] / goal["target"]  # Fraction of progress
-
+        
+        # Check if the goal is completed (i.e., progress >= target)
+        if goal["progress"] >= goal["target"]:
+            # If completed, reset the progress bar to empty
+            progress_percentage = 0  # No progress
+        else:
+            # Calculate the progress percentage
+            progress_percentage = goal["progress"] / goal["target"]  # Fraction of progress
+        
         # Set the maximum width of the progress bar
-        max_width = 300  # Canvas width is fixed at 300px
+        max_width = 200  # Canvas width is fixed at 200px
 
         # Calculate the progress width as a fraction of the maximum width
         progress_width = progress_percentage * max_width
@@ -1514,19 +1620,19 @@ class Dashboard:
         self.goal_progress_bar.create_rectangle(
             0, 0, progress_width, 30, fill="#4CAF50"
         )
-
+        
         # Create text to display the current progress in the middle of the progress bar
         self.goal_progress_bar.create_text(
-            progress_width / 2,
-            15,  # Position text in the middle of the progress bar
+            progress_width / 2, 15,  # Position text in the middle of the progress bar
             text=f"{goal['progress']}/{goal['target']}",
             anchor=tk.CENTER,
-            fill="white",
+            fill="white"
         )
 
     def calculate_days_left(self, due_date):
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
+
 
 
 ###### COURSE RECOMMENDATIONS #######
