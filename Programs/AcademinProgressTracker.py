@@ -1377,7 +1377,7 @@ class Dashboard:
                 "Missing Information", "Please enter both goal name and target."
             )
 
-        def update_goal_progress(self):
+    def update_goal_progress(self):
             # Get the selected goal from the listbox
             selected_goal = self.goal_listbox.curselection()
             
