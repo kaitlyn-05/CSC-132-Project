@@ -1176,11 +1176,7 @@ class Dashboard:
                 self.save_tasks_csv()
                 self.update_task_list()
                 self.completed_task()
-            
-                messagebox.showinfo(
-                    "Task Completed",
-                    f"Task '{task_name}' has been completed and removed.",
-                )
+                colorSpaz()
             else:
                 turn_red()
                 messagebox.showinfo(
