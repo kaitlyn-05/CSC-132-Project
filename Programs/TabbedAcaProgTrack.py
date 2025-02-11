@@ -504,7 +504,7 @@ class Dashboard:
             bg=self.original_theme["bg"], fg=self.original_theme["fg"])
         self.goal_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"])
-        
+    
         # Update entry fields' background and foreground colors
         self.task_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
@@ -526,6 +526,16 @@ class Dashboard:
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
         self.goal_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.prefix_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.course_num_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.taken_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.course_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
+        self.course_num_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"])
 
         # Update listboxes' background and foreground colors
         self.task_listbox.config(
@@ -536,7 +546,8 @@ class Dashboard:
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         self.goal_listbox.config(
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
-        
+        self.recommendations_listbox.config(
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"])
         # Update buttons' background and foreground colors
         self.add_task_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
@@ -551,6 +562,8 @@ class Dashboard:
         self.sumbit_attendance_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         self.filter_attendance_button.config(
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
+        self.get_recommendations_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"])
         
         # Update Goal Progress Bar background color
