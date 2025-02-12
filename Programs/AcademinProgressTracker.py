@@ -350,7 +350,7 @@ def show_login_frame():
 # captcha generation
 def generate_captcha():
     char_set = string.digits + string.ascii_letters 
-    char_set = char_set.replace('I', '').replace('l', '').replace('O', '').replace('0', '')
+    char_set = char_set.replace('I', '').replace('O', '')
 
 # Generate a CAPTCHA with 6 characters
     captcha_text = "".join(random.choices(char_set, k=6))
@@ -1462,7 +1462,7 @@ class Dashboard:
                     # Check if the goal is completed
                     if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
                         # Display the completion message
-                        messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
+                        self.complete_goal()
 
                         # Remove the goal from the goals dictionary
                         del self.goals[goal_name]
