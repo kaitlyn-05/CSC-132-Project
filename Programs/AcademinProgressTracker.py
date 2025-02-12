@@ -14,9 +14,6 @@ import time
 import requests
 
 ############ Function for GPIO colorways ###########
-
-
-############ Function for GPIO colorways ###########
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -255,19 +252,16 @@ def colorSpaz():
 # makes sure everything is off before starting
 main_off()
 
-
 ############ Login/Registration/Captcha ############
 # hashes a password for better security
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # opens the registration frame
 def new_user():
     """Opens the registration frame"""
     login_frame.pack_forget()
     show_registration_frame()
-
 
 # function that saves data in a CSV file
 # verifies that both the username and password are entered
@@ -339,9 +333,7 @@ def login():
         turn_red()
         time.sleep(0.5)
         result_label.config(
-            text="Hmm, it seems like you haven't registered yet! Please register before trying again"
-        )
-
+            text="Hmm, it seems like you haven't registered yet! Please register before trying again")
 
 # registration frame function
 def show_registration_frame():
@@ -350,14 +342,12 @@ def show_registration_frame():
     captcha_frame.pack_forget()
     loading_green()
 
-
 # login frame function
 def show_login_frame():
     login_frame.pack(padx=50, pady=50)
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
     loading_green()
-
 
 # captcha generation
 def generate_captcha():
@@ -368,7 +358,6 @@ def generate_captcha():
     captcha_text = "".join(random.choices(char_set, k=6))
     captcha_label.config(text=captcha_text)
 
-
 # captcha frame function
 def show_captcha_frame():
     generate_captcha()
@@ -376,7 +365,6 @@ def show_captcha_frame():
     login_frame.pack_forget()
     registration_frame.pack_forget()
     loading_green()
-
 
 # captcha verification
 def verify_captcha():
@@ -402,7 +390,6 @@ def verify_captcha():
         turn_red()
         generate_captcha()
         loading_green()
-
 
 ############ Dashboard ############
 class Dashboard:
@@ -996,13 +983,13 @@ class Dashboard:
         self.save_user_points()
 
         # Show badge popup if points reach a multiple of 5
-        if self.points % 3 == 0:
+        if self.points % 5 == 0:
             self.show_badge_popup()
 
     def show_badge_popup(self):
         """Display a popup when a badge is earned."""
 
-        badge_level = self.points // 3
+        badge_level = self.points // 5
         colorSpaz()
         messagebox.showinfo(
             "🎖 Badge Earned!",
@@ -1395,7 +1382,7 @@ class Dashboard:
                     if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
                         # Display the completion message
                         turn_green()
-                        messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
+                        self.complete_goal()
 
                         # Remove the goal from the goals dictionary
                         del self.goals[goal_name]
@@ -1419,7 +1406,6 @@ class Dashboard:
             turn_red()
             messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
 
-
     def update_goal_listbox(self):
         # Clear current listbox items
         self.goal_listbox.delete(0, tk.END)
@@ -1427,9 +1413,7 @@ class Dashboard:
         # Insert each goal into the listbox
         for goal_name, goal in self.goals.items():
             self.goal_listbox.insert(
-                tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}"
-            )
-
+                tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}")
 
     def save_goals_csv(self):
         try:
@@ -1441,8 +1425,6 @@ class Dashboard:
                     writer.writerow([goal_name, goal["target"], goal["progress"]])
         except Exception as e:
             print(f"Error saving goals: {e}")
-
-
 
     def load_goals_csv(self):
         try:
@@ -1460,7 +1442,6 @@ class Dashboard:
             self.update_goal_listbox()
         except FileNotFoundError:
             print("No saved goals found.")
-
 
     def update_goal_progress_bar(self, selected_goal_name=None):
         # Clear the progress bar before updating
@@ -1495,13 +1476,11 @@ class Dashboard:
             progress_width / 2, 15,  # Position text in the middle of the progress bar
             text=f"{goal['progress']}/{goal['target']}",
             anchor=tk.CENTER,
-            fill="white"
-        )
+            fill="white")
 
     def calculate_days_left(self, due_date):
         due_date = datetime.strptime(due_date, "%Y-%m-%d")
         return (due_date - datetime.now()).days
-
 
 ###### COURSE RECOMMENDATIONS #######
     def load_program_courses(self):
@@ -1598,7 +1577,6 @@ class Dashboard:
 
         # Clear the taken courses entry field
         self.taken_courses_entry.delete(0, tk.END)
-
 
 
 ######## SETUP ##########
