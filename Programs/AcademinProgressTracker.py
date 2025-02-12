@@ -509,6 +509,18 @@ class Dashboard:
         self.goal_name_label.config(
             bg=self.original_theme["bg"], fg=self.original_theme["fg"]
         )
+        self.course_name_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        self.course_num.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+            )
+        self.taken_courses.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
+        self.course_prefix_label.config(
+            bg=self.original_theme["bg"], fg=self.original_theme["fg"]
+        )
 
         # Update entry fields' background and foreground colors
         self.task_entry.config(
@@ -541,6 +553,15 @@ class Dashboard:
         self.goal_name_entry.config(
             bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
         )
+        self.course_prefix_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.course_num_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
+        self.taken_courses_entry.config(
+            bg=self.original_theme["entry_bg"], fg=self.original_theme["entry_fg"]
+        )
 
         # Update listboxes' background and foreground colors
         self.task_listbox.config(
@@ -555,6 +576,9 @@ class Dashboard:
         self.goal_listbox.config(
             bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
         )
+        self.recommendations_listbox.config(
+            bg=self.original_theme["listbox_bg"], fg=self.original_theme["listbox_fg"]
+        )
         # Update buttons' background and foreground colors
         self.add_task_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
@@ -563,9 +587,6 @@ class Dashboard:
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
         self.schedule_button.config(
-            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
-        )
-        self.update_class_grade_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
         self.add_goal_button.config(
@@ -578,6 +599,15 @@ class Dashboard:
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
         self.filter_attendance_button.config(
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
+        )
+        self.add_courses_button.config(
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
+        )
+        self.get_recommendations_button.config(
+            bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
+        )
+        self.theme_button.config(
             bg=self.original_theme["button_bg"], fg=self.original_theme["button_fg"]
         )
         # Update Goal Progress Bar background color
@@ -1247,43 +1277,6 @@ class Dashboard:
             messagebox.showwarning(
                 "Missing Information",
                 "Please enter all class details (name, schedule, and grade).",)
-
-    def update_class_grade(self):
-        selected_class = (
-            self.schedule_listbox.curselection())  # Make sure schedule_listbox is correct
-
-        if selected_class:
-            class_name = self.schedule_listbox.get(selected_class[0]).split(":")[0]
-
-            if class_name in self.classes:  # Ensure class exists in dictionary
-                grade = simpledialog.askfloat(
-                    "Update Class Grade",
-                    f"Enter grade for class '{class_name}' (current grade: {self.classes[class_name]['grade']}):",
-                    parent=self.root,
-                    minvalue=0,
-                    maxvalue=100,)
-                turn_green()
-
-                if grade is not None:
-                    # Update the class's grade
-                    self.classes[class_name]["grade"] = grade
-                    self.save_classes_csv()
-                    self.update_schedule_listbox()
-                    turn_green()
-                    messagebox.showinfo(
-                        "Class Grade Updated",
-                        f"Grade for '{class_name}' updated to {grade}.",)
-                else:
-                    turn_red()
-                    messagebox.showwarning("Missing Grade", "No grade entered.")
-            else:
-                turn_red()
-                messagebox.showwarning(
-                    "Class Not Found", f"Class '{class_name}' not found in records.")
-        else:
-            turn_red()
-            messagebox.showwarning(
-                "Class Not Selected", "Please select a class from the list.")
 
     def update_schedule_listbox(self):
         self.schedule_listbox.delete(0, tk.END)
