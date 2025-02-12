@@ -397,8 +397,6 @@ class Dashboard:
         self.username = username
         self.folder_path = f"my_{username}_folder"
         os.makedirs(self.folder_path, exist_ok=True)
-        self.folder_path = f"my_{username}_folder"
-        self.attendance_file = os.path.join(self.folder_path, "attendance.csv")
         self.points = self.load_user_points()
         self.root.title("Academic Progress Tracker")
         self.make_fullscreen()
@@ -1410,8 +1408,9 @@ class Dashboard:
                 tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}")
 
     def save_goals_csv(self):
+        file_path = os.path.join(self.folder_path, "goals.csv")
         try:
-            with open("goals.csv", mode="w", newline="") as file:
+            with open(file_path, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 for goal_name, goal in self.goals.items():
                     writer.writerow([goal_name, goal["target"], goal["progress"]])
@@ -1428,94 +1427,6 @@ class Dashboard:
                     progress = int(row[2])
                     self.goals[goal_name] = {"target": target, "progress": progress}
             self.update_goal_listbox()  # Update listbox after loading goals
-        except FileNotFoundError:
-            print("No saved goals found.")
-
-    def update_goal_progress(self):
-        # Get the selected goal from the listbox
-        selected_goal = self.goal_listbox.curselection()
-
-        if selected_goal:
-            goal_name = self.goal_listbox.get(selected_goal[0]).split(":")[0]
-
-            # Show a pop-up dialog to ask for the progress value
-            progress = simpledialog.askinteger(
-                "Update Goal Progress",  # Title of the dialog
-                f"Enter progress for goal '{goal_name}' (current: {self.goals[goal_name]['progress']}):",
-                parent=self.root,
-                minvalue=0,  # Minimum allowed progress
-                maxvalue=self.goals[goal_name]["target"])  # Maximum allowed progress (cannot exceed target)
-
-            if progress is not None:  # If user entered a valid value (not canceled)
-                # Check if the progress is valid
-                if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
-                    # Update the goal's progress
-                    self.goals[goal_name]["progress"] = progress
-
-                    # Save the updated goals to the CSV file
-                    self.save_goals_csv()
-
-                    # Update the goal listbox and progress bar
-                    self.update_goal_listbox()
-                    self.update_goal_progress_bar(goal_name)
-
-                    # Check if the goal is completed
-                    if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
-                        # Display the completion message
-                        self.complete_goal()
-
-                        # Remove the goal from the goals dictionary
-                        del self.goals[goal_name]
-
-                        # Remove the goal from the listbox
-                        self.update_goal_listbox()
-                        
-                        # Ensure the CSV is updated (rewritten without the removed goal)
-                        self.save_goals_csv()
-
-                else:
-                    # Show warning if the progress is invalid (less than current or greater than target)
-                    messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
-            else:
-                # Show warning if no progress was entered
-                messagebox.showwarning("Missing Progress", "No progress entered.")
-        else:
-            # Show warning if no goal is selected
-            messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
-
-    def update_goal_listbox(self):
-        # Clear current listbox items
-        self.goal_listbox.delete(0, tk.END)
-
-        # Insert each goal into the listbox
-        for goal_name, goal in self.goals.items():
-            self.goal_listbox.insert(
-                tk.END, f"{goal_name}: {goal['progress']}/{goal['target']}")
-
-    def save_goals_csv(self):
-        try:
-            # Open the CSV file in write mode, clearing its content first
-            with open("goals.csv", mode="w", newline="") as file:
-                writer = csv.writer(file)
-                # Write each goal into the CSV file (after any removal of completed goals)
-                for goal_name, goal in self.goals.items():
-                    writer.writerow([goal_name, goal["target"], goal["progress"]])
-        except Exception as e:
-            print(f"Error saving goals: {e}")
-
-    def load_goals_csv(self):
-        try:
-            # Open the CSV file to load saved goals
-            with open("goals.csv", mode="r", newline="") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    goal_name = row[0]
-                    target = int(row[1])
-                    progress = int(row[2])
-                    self.goals[goal_name] = {"target": target, "progress": progress}
-            
-            # After loading, update the listbox to reflect the loaded goals
-            self.update_goal_listbox()
         except FileNotFoundError:
             print("No saved goals found.")
 
