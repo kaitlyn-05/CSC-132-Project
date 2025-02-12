@@ -1379,8 +1379,7 @@ class Dashboard:
                     # Check if the goal is completed
                     if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
                         # Display the completion message
-                        messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
-                        
+                        self.complete_goal()
                         # Remove the goal from the goals dictionary
                         del self.goals[goal_name]
                         
