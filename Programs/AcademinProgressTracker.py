@@ -1535,6 +1535,8 @@ class Dashboard:
         course_numbers = self.course_num_entry.get().strip()
 
         if not prefix or not course_numbers:
+            turn_red()
+            
             messagebox.showwarning("Input Error", "Please enter a course prefix and at least one course number.")
             return
 
@@ -1549,7 +1551,7 @@ class Dashboard:
         # Clear input fields
         self.course_prefix_entry.delete(0, tk.END)
         self.course_num_entry.delete(0, tk.END)
-
+        turn_green()
         messagebox.showinfo("Success", "Courses added successfully!")
 
     def get_recommendations(self):
