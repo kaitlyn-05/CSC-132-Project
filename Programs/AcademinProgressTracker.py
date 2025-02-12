@@ -896,7 +896,7 @@ class Dashboard:
         self.get_recommendations_button.grid(row=5, column=7, columnspan=2,pady=5)
 
         # Recommendations Listbox
-        self.recommendations_listbox = tk.Listbox(self.root, height=10, width=50)
+        self.recommendations_listbox = tk.Listbox(self.root, height=10, width=40)
         self.recommendations_listbox.grid(row=6, column=7, columnspan=2,pady=5)
 
 
