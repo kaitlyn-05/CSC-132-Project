@@ -14,33 +14,9 @@ import time
 import requests
 
 ############ Function for GPIO colorways ###########
-def colorSpaz():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
-    payload = json.dumps(
-        {
-            "command": "Overlay Model Effect",
-            "multisyncCommand": False,
-            "multisyncHosts": "",
-            "args": [
-                "LEDs",
-                "Enabled",
-                "Bars",
-                "Up",
-                "5000",
-                "4",
-                "3",
-                "5",
-                "#ff0000",
-                "#00ff00",
-                "#0000ff",
-                "#ef0aff",
-                "#ffea00",
-            ],
-        }
-    )
 
-    requests.request("POST", url, data=payload)
 
+############ Function for GPIO colorways ###########
 def overlay_on():
     body = {
         "command": "Overlay Model Effect",
@@ -60,13 +36,13 @@ def overlay_on():
             "#00ff00",
         ],
     }
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     headers = {"Content-Type": "application/json"}
     requests.post(url, headers=headers, json=body)
 
 def green_first():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -81,7 +57,7 @@ def green_first():
     requests.request("POST", url, headers=headers, data=payload)
 
 def yellow_second():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -96,7 +72,7 @@ def yellow_second():
     requests.request("POST", url, headers=headers, data=payload)
 
 def orange_third():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -111,7 +87,7 @@ def orange_third():
     requests.request("POST", url, headers=headers, data=payload)
 
 def dark_orange_fourth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -125,7 +101,7 @@ def dark_orange_fourth():
     requests.request("POST", url, headers=headers, data=payload)
 
 def red_fifth():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Start",
@@ -139,7 +115,7 @@ def red_fifth():
     requests.request("POST", url, headers=headers, data=payload)
 
 def loading_green():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -167,7 +143,7 @@ def loading_green():
     requests.request("POST", url, headers=headers, data=payload)
 
 def led_pixel(leds, color):
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -183,7 +159,7 @@ def led_pixel(leds, color):
 
 def overlay_off():
     headers = {"Content-Type": "application/json"}
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     body = {
         "command": "Overlay Model State",
@@ -194,7 +170,7 @@ def overlay_off():
     requests.post(url, headers=headers, json=body)
 
 def all_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command/Overlay%20Model%20Clear"
 
     payload = json.dumps(["LEDs"])
     headers = {"Content-Type": "application/json"}
@@ -202,7 +178,7 @@ def all_off():
     requests.request("POST", url, headers=headers, data=payload)
 
 def turn_off_single():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
     payload = json.dumps(
         {
             "command": "Test Stop",
@@ -216,7 +192,7 @@ def turn_off_single():
     requests.request("POST", url, headers=headers, data=payload)
 
 def static_off():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+    url = "http://172.16.1.2/api/command"
 
     payload = json.dumps(
         {
@@ -246,8 +222,39 @@ def turn_green():
     time.sleep(0.4)
     main_off()
 
+def colorSpaz():
+    main_off()
+    url = "http://172.16.1.2/api/command"
+    payload = json.dumps(
+        {
+            "command": "Overlay Model Effect",
+            "multisyncCommand": False,
+            "multisyncHosts": "",
+            "args": [
+                "LEDs",
+                "Enabled",
+                "Bars",
+                "Up",
+                "5000",
+                "4",
+                "3",
+                "5",
+                "#ff0000",
+                "#00ff00",
+                "#0000ff",
+                "#ef0aff",
+                "#ffea00",
+            ],
+        }
+    )
+
+    requests.request("POST", url, data=payload)
+    time.sleep(1)
+    main_off()
+
 # makes sure everything is off before starting
 main_off()
+
 
 ############ Login/Registration/Captcha ############
 # hashes a password for better security
@@ -282,14 +289,18 @@ def save_data():
             # deletes the entries in the entry line
         username_entry_save.delete(0, tk.END)
         password_entry_save.delete(0, tk.END)
+        turn_green()
         save_result_label.config(text="User saved successfully")
         # then opens the login frame
+        turn_green()
         show_login_frame()
-
+        loading_green()
     else:
+        turn_red()
         save_result_label.config(text="Please enter a username AND password.")
-
-
+        turn_red()
+        main_off()
+        loading_green()
 # a fucntion to log in the user, verifies that the user is
 # registered
 def login():
@@ -337,6 +348,7 @@ def show_registration_frame():
     registration_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     captcha_frame.pack_forget()
+    loading_green()
 
 
 # login frame function
@@ -344,6 +356,7 @@ def show_login_frame():
     login_frame.pack(padx=50, pady=50)
     registration_frame.pack_forget()
     captcha_frame.pack_forget()
+    loading_green()
 
 
 # captcha generation
@@ -362,6 +375,7 @@ def show_captcha_frame():
     captcha_frame.pack(padx=50, pady=50)
     login_frame.pack_forget()
     registration_frame.pack_forget()
+    loading_green()
 
 
 # captcha verification
@@ -387,6 +401,7 @@ def verify_captcha():
         main_off()
         turn_red()
         generate_captcha()
+        loading_green()
 
 
 ############ Dashboard ############
@@ -986,18 +1001,22 @@ class Dashboard:
 
     def show_badge_popup(self):
         """Display a popup when a badge is earned."""
+
         badge_level = self.points // 3
+        colorSpaz()
         messagebox.showinfo(
             "🎖 Badge Earned!",
             f"Congratulations, {self.username}! You've earned Badge {badge_level}!\nKeep up the great work!"
         )
 
     def completed_task(self):
+        turn_green()
         """Mark task as complete and award points."""
         messagebox.showinfo("Task Completed", "You've completed a task!")
         self.update_points(3)  
 
     def complete_goal(self):
+        turn_green()
         """Mark goal as complete and award points."""
         messagebox.showinfo("Goal Achieved", "You've completed a goal!")
         self.update_points(2)  
@@ -1145,10 +1164,10 @@ class Dashboard:
             self.handle_missing_input(
                 "Input Error", "Please enter both task and due date."
             )
-            turn_red()
-
+            
     def complete_task(self):
         selected_task = self.task_listbox.curselection()
+
 
         if selected_task:
             task = self.task_listbox.get(selected_task[0])
@@ -1167,9 +1186,9 @@ class Dashboard:
                 self.save_tasks_csv()
                 self.update_task_list()
                 self.completed_task()
-                colorSpaz()
+             
             else:
-                turn_red()
+                
                 messagebox.showinfo(
                     "Task Not Completed", "Task completion was canceled."
                 )
@@ -1201,7 +1220,6 @@ class Dashboard:
                 turn_green()
         except FileNotFoundError:
             print("Tasks file not found, starting fresh.")
-            turn_red()
 
     def save_tasks_csv(self):
         file_path = os.path.join(self.folder_path, "tasks.csv")
@@ -1226,7 +1244,7 @@ class Dashboard:
             self.update_schedule_list()
             turn_green()
         except FileNotFoundError:
-            turn_red()
+            
             print("Schedule file not found, starting fresh.")
 
     def save_schedule_csv(self):
@@ -1334,10 +1352,13 @@ class Dashboard:
                 # Clear entries after adding goal
                 self.goal_name_entry.delete(0, tk.END)
                 self.goal_target_entry.delete(0, tk.END)
+                turn_green()
                 messagebox.showinfo("Goal Added", f"Goal '{goal_name}' set with target {target}.")
             except ValueError:
+                turn_red()
                 messagebox.showerror("Invalid Target", "Please enter a valid integer for the target.")
         else:
+            turn_red()
             messagebox.showwarning("Missing Information", "Please enter both goal name and target.")
 
     def update_goal_progress(self):
@@ -1360,6 +1381,7 @@ class Dashboard:
                 # Check if the progress is valid
                 if progress >= self.goals[goal_name]["progress"] and progress <= self.goals[goal_name]["target"]:
                     # Update the goal's progress
+                    turn_green()
                     self.goals[goal_name]["progress"] = progress
 
                     # Save the updated goals to the CSV file
@@ -1372,6 +1394,7 @@ class Dashboard:
                     # Check if the goal is completed
                     if self.goals[goal_name]["progress"] >= self.goals[goal_name]["target"]:
                         # Display the completion message
+                        turn_green()
                         messagebox.showinfo("Goal Completed", f"Goal '{goal_name}' is completed!")
 
                         # Remove the goal from the goals dictionary
@@ -1384,13 +1407,16 @@ class Dashboard:
                         self.save_goals_csv()
 
                 else:
+                    turn_red()
                     # Show warning if the progress is invalid (less than current or greater than target)
                     messagebox.showwarning("Invalid Progress", "Progress cannot be less than the current value or greater than the target.")
             else:
+                turn_red()
                 # Show warning if no progress was entered
                 messagebox.showwarning("Missing Progress", "No progress entered.")
         else:
             # Show warning if no goal is selected
+            turn_red()
             messagebox.showwarning("Goal Not Selected", "Please select a goal from the list.")
 
 
@@ -1428,6 +1454,7 @@ class Dashboard:
                     target = int(row[1])
                     progress = int(row[2])
                     self.goals[goal_name] = {"target": target, "progress": progress}
+                    
             
             # After loading, update the listbox to reflect the loaded goals
             self.update_goal_listbox()
