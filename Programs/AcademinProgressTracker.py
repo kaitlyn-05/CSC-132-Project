@@ -331,9 +331,11 @@ def login():
     # if the username or password are not found
     except FileNotFoundError:
         turn_red()
-        time.sleep(0.5)
+       
         result_label.config(
             text="Hmm, it seems like you haven't registered yet! Please register before trying again")
+        turn_red()
+        loading_green()
 
 # registration frame function
 def show_registration_frame():
@@ -1019,11 +1021,12 @@ class Dashboard:
 
         # Input validation
         if not all([course_name, date, time]):
-            print("All fields must be filled.")
             main_off()
             turn_red()
             time.sleep(0.4)
             main_off()
+            messagebox.showerror("Input Error", "Please fill in all the fields.")
+            
             return
 
         # Debugging: Print file path and input data
@@ -1036,11 +1039,13 @@ class Dashboard:
                 writer = csv.writer(file)
                 writer.writerow([course_name, date, time, status])
 
-            print(
-                f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
-            )
 
             turn_green()
+            messagebox.showinfo(
+            "Success", 
+            f"Attendance submitted successfully:\nCourse: {course_name}\nDate: {date}\nTime: {time}"
+        )
+            
             self.course_name_var.set("")
             # datetime.now resets current date as of button click.
             self.date_var.set(datetime.now().strftime("%Y-%m-%d"))
@@ -1204,7 +1209,7 @@ class Dashboard:
                     {"task": row[0], "due_date": row[1], "created": row[2]}
                     for row in reader
                 ]
-                turn_green()
+                
         except FileNotFoundError:
             print("Tasks file not found, starting fresh.")
 
